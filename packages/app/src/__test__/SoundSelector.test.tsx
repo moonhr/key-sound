@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import SoundSelector from "@/components/keyboard";
+import SoundSelector from "@/components/sound_selector";
 import axios from "axios";
 
 // axios의 get 메서드를 모킹합니다.
@@ -25,7 +25,7 @@ describe("SoundSelector", () => {
     render(
       <SoundSelector
         soundName="test-sound"
-        apiEndpoint="http://localhost:3001/sounds"
+        sountApiEndpoint="http://localhost:3001/sounds"
       />
     );
 
@@ -52,7 +52,7 @@ describe("SoundSelector", () => {
     render(
       <SoundSelector
         soundName="test-sound"
-        apiEndpoint="http://localhost:3001/sounds"
+        sountApiEndpoint="http://localhost:3001/sounds"
       />
     );
 
