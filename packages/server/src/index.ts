@@ -16,10 +16,6 @@ app.use(morgan("dev")); // 로그 기록 (개발 환경)
 app.use(express.json()); // JSON 요청 바디 파싱
 app.use(express.static(path.join(__dirname, "../frontend/public"))); // 정적 파일 제공
 app.use("/api/sound", soundRoutes);
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
-  next();
-});
 
 // 기본 라우트
 app.get("/", (req: Request, res: Response) => {
