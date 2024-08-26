@@ -3,7 +3,6 @@
 
 import React, { useState, useCallback, useEffect } from "react";
 import SoundSelector from "@/components/sound_selector";
-import Textarea from "@/components/textarea";
 import { API_ENDPOINTS } from "@/ts/end_point";
 import { useSoundLoader } from "@/hooks/use_sound_loader";
 import { useSoundControls } from "@/hooks/use_sound_controls";
@@ -38,6 +37,21 @@ export default function Home() {
     }
   }, [audio, isCached, adjustVolume, adjustPitch, pitch, volume]);
 
+  // 오디오가 선택되면 키보드 입력으로 사운드 재생
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (selectedSound) {
+        handlePlaySound();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedSound, handlePlaySound]);
+
   return (
     <div>
       <h1>사운드 선택</h1>
@@ -51,8 +65,6 @@ export default function Home() {
         onSelectSound={onSelectSound}
       />
       <SoundSelector soundName="iphone" onSelectSound={onSelectSound} />
-
-      <Textarea soundName={selectedSound} onPlaySound={handlePlaySound} />
 
       {/* 음량 조절 슬라이더 */}
       <div>
