@@ -6,12 +6,9 @@ import SoundSelector from "@/components/sound_selector";
 import { API_ENDPOINTS } from "@/ts/end_point";
 import { useSoundLoader } from "@/hooks/use_sound_loader";
 import { useSoundControls } from "@/hooks/use_sound_controls";
-import * as Tone from "tone";
 
 export default function Home() {
   const [selectedSound, setSelectedSound] = useState<string | null>(null);
-  const [player, setPlayer] = useState<Tone.Player | null>(null);
-
   const { audio, isCached, loadSound } = useSoundLoader({
     soundApiEndpoint: API_ENDPOINTS.SOUND,
   });
@@ -23,25 +20,6 @@ export default function Home() {
     localStorage.clear();
   }, []);
 
-  // 오디오 로딩 및 피치, 음량 설정
-  useEffect(() => {
-    if (selectedSound) {
-      const newPlayer = new Tone.Player(selectedSound).toDestination();
-
-      newPlayer
-        .load()
-        .then(() => {
-          // 파일 로드가 완료되면 음량과 피치 설정
-          adjustVolume(newPlayer, volume);
-          adjustPitch(newPlayer, pitch);
-          setPlayer(newPlayer);
-        })
-        .catch((error) => {
-          console.error("Error loading audio file:", error);
-        });
-    }
-  }, [selectedSound, volume, pitch, adjustVolume, adjustPitch]);
-
   const onSelectSound = useCallback(
     (soundName: string) => {
       setSelectedSound(soundName);
@@ -51,14 +29,13 @@ export default function Home() {
   );
 
   const handlePlaySound = useCallback(() => {
-    console.log(player);
-    if (player) {
-      console.log(player);
-      player.start();
-      adjustVolume(player, volume); // 볼륨 조절
-      adjustPitch(player, pitch); // 피치 조절
+    if (isCached && audio) {
+      audio.currentTime = 0;
+      audio.play();
+      adjustVolume(audio, volume); // 볼륨 조절
+      adjustPitch(audio, pitch); // 피치 조절
     }
-  }, [player, adjustVolume, adjustPitch, pitch, volume]);
+  }, [audio, isCached, adjustVolume, adjustPitch, pitch, volume]);
 
   // 오디오가 선택되면 키보드 입력으로 사운드 재생
   useEffect(() => {
