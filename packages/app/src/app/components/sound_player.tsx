@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useEffect } from "react";
-import FileUploader from "@/components/file_uploader";
+// import FileUploader from "@/components/file_uploader";
 import SoundSelector from "@/components/sound_selector";
 import VolumeControl from "@/components/volume_control";
 import PitchControl from "@/components/pitch_control";
@@ -74,15 +74,21 @@ export default function SoundPlayer() {
     { soundName: "office-keyboard", onSelectSound: setSelectedSound },
     { soundName: "red-key", onSelectSound: setSelectedSound },
     { soundName: "shoot-arrow-sound", onSelectSound: setSelectedSound },
+    { soundName: "bae-book", onSelectSound: setSelectedSound },
+    { soundName: "yujin-money", onSelectSound: setSelectedSound },
+    { soundName: "yujin-bbang", onSelectSound: setSelectedSound },
+    { soundName: "jeamini-hi", onSelectSound: setSelectedSound },
+    { soundName: "ho-why", onSelectSound: setSelectedSound },
+    { soundName: "gong-merge", onSelectSound: setSelectedSound },
   ];
   return (
     <div>
-      <h1>사운드 선택 및 업로드</h1>
+      {/* <h1>사운드 선택 및 업로드</h1>
 
       <FileUploader onFileUpload={handleFileUpload} />
       {uploadedSoundUrl && (
         <button onClick={handlePlaySound}>Play Uploaded Sound</button>
-      )}
+      )} */}
 
       <div className="p-10">
         {soundOptions.map(({ soundName }) => (
