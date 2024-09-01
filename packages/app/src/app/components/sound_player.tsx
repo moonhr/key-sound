@@ -8,27 +8,55 @@ import PitchControl from "@/components/pitch_control";
 import { SoundSelectorPropsInterface } from "@/ts/interface/sound_selector_props";
 import { API_ENDPOINTS } from "@/ts/end_point";
 import { useSoundLoader } from "@/hooks/use_sound_loader";
+import { soundOptions } from "@/static/sound_options";
 
-export default function SoundPlayer() {
+interface SoundPlayerProp {
+  className?: string;
+}
+
+export default function SoundPlayer({ className }: SoundPlayerProp) {
   const [selectedSound, setSelectedSound] = useState<string | null>(null);
   const [uploadedSoundUrl, setUploadedSoundUrl] = useState<string | null>(null);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null); // 업로드된 파일명을 저장할 상태
   const [volume, setVolume] = useState<number>(1);
   const [pitch, setPitch] = useState<number>(1);
   const { audio, isCached, loadSound } = useSoundLoader({
     soundApiEndpoint: API_ENDPOINTS.SOUND,
   });
 
-  // 파일 업로드 시 URL 처리
-  const handleFileUpload = useCallback((url: string) => {
-    setUploadedSoundUrl(url);
-    setSelectedSound(null); // 업로드된 파일로 사운드 선택 초기화
+  useEffect(() => {
+    localStorage.clear();
   }, []);
+
+  // 파일 업로드 시 URL 처리
+  const handleFileUpload = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (file) {
+        // 파일 타입 및 크기 제한
+        if (file.type !== "audio/mpeg" || file.size > 300 * 1024) {
+          alert("지원되지 않는 파일 형식이거나 파일 크기가 너무 큽니다.");
+          console.log(file.type);
+          console.log(file.size);
+          return;
+        }
+        const url = URL.createObjectURL(file);
+        setUploadedSoundUrl(url);
+        setUploadedFileName(file.name);
+        console.log(file.name);
+        localStorage.setItem(file.name, url);
+        setSelectedSound(null);
+      }
+    },
+    []
+  );
 
   // 사운드 선택 시 로드
   const onSelectSound = useCallback(
     (soundName: string) => {
       setSelectedSound(soundName);
       loadSound(soundName); // 사운드 로드
+      setUploadedFileName(null);
     },
     [loadSound]
   );
@@ -48,7 +76,7 @@ export default function SoundPlayer() {
 
   // 키보드 입력에 따른 사운드 재생
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
+    const handleKeyDown = () => {
       handlePlaySound();
     };
 
@@ -59,48 +87,34 @@ export default function SoundPlayer() {
     };
   }, [handlePlaySound]);
 
-  // SoundSelectorPropsInterface 배열
-  const soundOptions: SoundSelectorPropsInterface[] = [
-    { soundName: "black-key", onSelectSound: setSelectedSound },
-    { soundName: "blue-key", onSelectSound: setSelectedSound },
-    { soundName: "boom-short", onSelectSound: setSelectedSound },
-    { soundName: "brown-key", onSelectSound: setSelectedSound },
-    { soundName: "cartoon-walking-sound", onSelectSound: setSelectedSound },
-    { soundName: "catoon-duck", onSelectSound: setSelectedSound },
-    { soundName: "iphone", onSelectSound: setSelectedSound },
-    { soundName: "low-noise-brown-key", onSelectSound: setSelectedSound },
-    { soundName: "magic-wand", onSelectSound: setSelectedSound },
-    { soundName: "mario-jumping-sound", onSelectSound: setSelectedSound },
-    { soundName: "office-keyboard", onSelectSound: setSelectedSound },
-    { soundName: "red-key", onSelectSound: setSelectedSound },
-    { soundName: "shoot-arrow-sound", onSelectSound: setSelectedSound },
-    { soundName: "bae-book", onSelectSound: setSelectedSound },
-    { soundName: "yujin-money", onSelectSound: setSelectedSound },
-    { soundName: "yujin-bbang", onSelectSound: setSelectedSound },
-    { soundName: "jeamini-hi", onSelectSound: setSelectedSound },
-    { soundName: "ho-why", onSelectSound: setSelectedSound },
-    { soundName: "gong-merge", onSelectSound: setSelectedSound },
-  ];
   return (
-    <div>
-      {/* <h1>사운드 선택 및 업로드</h1>
+    <div className={className}>
+      {/* 파일 업로드 버튼 */}
+      <input
+        type="file"
+        onChange={handleFileUpload}
+        accept="audio/mp3"
+        placeholder="파일업로드"
+      />
 
-      <FileUploader onFileUpload={handleFileUpload} />
-      {uploadedSoundUrl && (
-        <button onClick={handlePlaySound}>Play Uploaded Sound</button>
-      )} */}
-
-      <div className="p-10">
-        {soundOptions.map(({ soundName }) => (
-          <SoundSelector
-            key={soundName}
-            soundName={soundName}
-            onSelectSound={onSelectSound}
-          />
-        ))}
+      <div className="">
+        <div className="p-3 grid grid-cols-8 grid-rows-5 gap-5 justify-center items-center ">
+          {soundOptions.map((soundName) => (
+            <SoundSelector
+              key={soundName}
+              soundName={soundName}
+              onSelectSound={onSelectSound}
+              className=" bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 p-5 hover:bg-cyan-300"
+            />
+          ))}
+        </div>
+        {/* 사용자가 추가한 효과음 */}
+        {uploadedSoundUrl ? (
+          <button className=" bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 p-5 hover:bg-cyan-300">{`추가된 효과음: ${uploadedFileName}`}</button>
+        ) : null}
+        <VolumeControl volume={volume} onVolumeChange={setVolume} />
+        <PitchControl pitch={pitch} onPitchChange={setPitch} />
       </div>
-      <VolumeControl volume={volume} onVolumeChange={setVolume} />
-      <PitchControl pitch={pitch} onPitchChange={setPitch} />
     </div>
   );
 }
