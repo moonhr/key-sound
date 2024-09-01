@@ -7,6 +7,7 @@ import { SoundSelectorPropsInterface } from "@/ts/interface/sound_selector_props
 const SoundSelector: React.FC<SoundSelectorPropsInterface> = ({
   soundName,
   onSelectSound,
+  className,
 }) => {
   // 버튼 클릭 시 선택된 사운드를 상위 컴포넌트에 전달
   const handleSelectSound = () => {
@@ -14,7 +15,7 @@ const SoundSelector: React.FC<SoundSelectorPropsInterface> = ({
   };
 
   return (
-    <button onClick={handleSelectSound}>
+    <button onClick={handleSelectSound} className={className}>
       {soundName}
     </button>
   );
