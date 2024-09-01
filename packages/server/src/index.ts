@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3001;
 
 // 미들웨어 설정
 // CORS 설정
-const allowedOrigins = ["http://localhost:3000"]; // 허용할 도메인 목록
+// const allowedOrigins = ["http://localhost:3000"]; // 허용할 도메인 목록
 
 app.use(cors());
 app.use(morgan("dev")); // 로그 기록 (개발 환경)
