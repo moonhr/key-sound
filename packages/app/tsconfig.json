@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "outDir": "./build",
     "lib": [
       "dom",
       "dom.iterable",
@@ -29,15 +30,11 @@
     }
   },
   "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    "src/**/*",
-    "src/__tests__/**/*"
+    "src/main.ts",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
-    "dist"
+    ".next"
   ]
 }

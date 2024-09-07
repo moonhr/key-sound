@@ -1,14 +1,17 @@
 {
   "name": "app",
   "version": "0.1.0",
+  "main": "build/main.js", 
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && tsc -p tsconfig.electron.json",
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "electron": "tsc -p tsconfig.electron.json && electron .",
+    "electron-build": "next build && tsc -p tsconfig.electron.json && electron ."
   },
   "dependencies": {
     "axios": "^1.7.5",
@@ -17,7 +20,10 @@
     "react-dom": "^18",
     "tone": "^15.0.4"
   },
+  
   "devDependencies": {
+    "concurrently": "^7.0.0",
+    "wait-on": "^6.0.0",
     "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/react": "^16.0.0",
     "@types/jest": "^29.5.12",
@@ -34,5 +40,28 @@
     "tailwindcss": "^3.4.1",
     "ts-jest": "^29.2.5",
     "typescript": "^5"
+  },
+  "build": {
+  "appId": "com.yourapp.id",
+  "files": [
+    "src/**/*",
+    "package.json"
+  ],
+  "directories": {
+    "buildResources": "assets"
+  },
+  "mac": {
+    "target": "dmg",
+    "icon": "assets/icon.icns"
+  },
+  "win": {
+    "target": "nsis",
+    "icon": "assets/icon.ico"
+  },
+  "linux": {
+    "target": "AppImage",
+    "icon": "assets/icon.png"
   }
+}
+
 }
