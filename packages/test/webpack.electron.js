@@ -2,7 +2,7 @@ const path = require("path");
 
 module.exports = {
   // Build Mode
-  mode: "development",
+  mode: process.env.NODE_ENV === "development" ? "development" : "production",
   // Electron Entrypoint
   entry: "./src/main.ts",
   target: "electron-main",

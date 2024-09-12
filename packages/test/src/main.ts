@@ -1,6 +1,9 @@
 import { app, BrowserWindow, Tray, nativeImage } from "electron";
 // import { TrayMenu } from "./electron/TrayMenu";
 import * as path from "path";
+import * as dotenv from "dotenv";
+
+dotenv.config(); // .env 파일의 변수들을 process.env에 로드합니다.
 
 let tray: Tray;
 let menuWindow: BrowserWindow;
