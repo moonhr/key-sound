@@ -1,29 +1,68 @@
-import { app, BrowserWindow, Tray, Menu, nativeImage } from "electron";
+import { app, BrowserWindow, Tray, nativeImage } from "electron";
 import * as path from "path";
 
-// 환경 변수 설정
-if (!process.env.NODE_ENV) {
-  process.env.NODE_ENV = "production";
+let tray: Tray;
+let menuWindow: BrowserWindow;
+
+function createMenuWindow() {
+  menuWindow = new BrowserWindow({
+    width: 300,
+    height: 400,
+    frame: false,
+    resizable: false,
+    show: false,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    },
+  });
+
+  // Next.js 앱의 경로를 지정합니다.
+  const nextAppPath = path.join(__dirname, "");
+  menuWindow.loadFile(nextAppPath);
+
+  menuWindow.on("blur", () => {
+    if (menuWindow && !menuWindow.webContents.isDevToolsOpened()) {
+      menuWindow.hide();
+    }
+  });
+
+  return menuWindow;
 }
 
-let tray;
+function toggleMenuWindow() {
+  if (!menuWindow) {
+    createMenuWindow();
+  }
+
+  if (menuWindow.isVisible()) {
+    menuWindow.hide();
+  } else {
+    const trayBounds = tray.getBounds();
+    const windowBounds = menuWindow.getBounds();
+
+    // macOS에서는 상단바 아이콘 아래에 창을 위치시킵니다.
+    const x = Math.round(
+      trayBounds.x + trayBounds.width / 2 - windowBounds.width / 2
+    );
+    const y = Math.round(trayBounds.y + trayBounds.height);
+
+    menuWindow.setPosition(x, y, false);
+    menuWindow.show();
+    menuWindow.focus();
+  }
+}
 
 app.whenReady().then(() => {
-  // 이미지 파일 경로 설정
-  const iconPath = path.join(process.resourcesPath, "assets", "logo.png"); // nativeImage 객체 생성
-  const icon = nativeImage.createFromPath(iconPath);
-  // 트레이 아이콘 생성
-  tray = new Tray(icon);
-  // 컨텍스트 메뉴 생성
-  const contextMenu = Menu.buildFromTemplate([
-    { label: "Item1", type: "radio" },
-    { label: "Item2", type: "radio" },
-    { label: "Item3", type: "radio", checked: true },
-    { label: "Item4", type: "radio" },
-  ]);
+  const iconPath = path.join(__dirname, "../main/assets/favicon.ico");
+  const icon = nativeImage
+    .createFromPath(iconPath)
+    .resize({ width: 16, height: 16 });
 
-  tray.setToolTip("This is my application.");
-  tray.setContextMenu(contextMenu);
+  tray = new Tray(icon);
+  tray.setToolTip("Next.js Menubar App");
+
+  tray.on("click", toggleMenuWindow);
 });
 
 app.on("window-all-closed", () => {
