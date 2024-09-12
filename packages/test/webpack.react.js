@@ -5,7 +5,7 @@ const path = require("path");
 module.exports = {
   mode: "development",
   entry: "./src/public/renderer.tsx",
-  target: "electron-renderer",
+  target: "web",
   devtool: "source-map",
   devServer: {
     static: {
@@ -13,6 +13,8 @@ module.exports = {
     },
     compress: true,
     port: 9000,
+    hot: true,
+    historyApiFallback: true,
   },
   resolve: {
     alias: {
@@ -47,6 +49,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "renderer.js",
+    publicPath: "/",
   },
   plugins: [
     new HtmlWebpackPlugin({

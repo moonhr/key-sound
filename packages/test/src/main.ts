@@ -19,8 +19,15 @@ function createMenuWindow() {
   });
 
   // Next.js 앱의 경로를 지정합니다.
-  const nextAppPath = path.join(__dirname, "index.html");
-  menuWindow.loadFile(nextAppPath);
+  // const nextAppPath = path.join(__dirname, "index.html");
+  // menuWindow.loadFile(nextAppPath);
+
+  if (process.env.NODE_ENV === "development") {
+    menuWindow.loadURL("http://localhost:9000"); // React 개발 서버 주소
+  } else {
+    const nextAppPath = path.join(__dirname, "index.html");
+    menuWindow.loadFile(nextAppPath);
+  }
 
   menuWindow.on("blur", () => {
     if (menuWindow && !menuWindow.webContents.isDevToolsOpened()) {

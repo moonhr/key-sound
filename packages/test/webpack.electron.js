@@ -6,6 +6,17 @@ module.exports = {
   // Electron Entrypoint
   entry: "./src/main.ts",
   target: "electron-main",
+  node: {
+    __dirname: false,
+    __filename: false,
+  },
+  externals: {
+    "electron-reload": "commonjs2 electron-reload",
+  },
+  node: {
+    __dirname: false,
+    __filename: false,
+  },
   resolve: {
     alias: {
       ["@"]: path.resolve(__dirname, "src"),
