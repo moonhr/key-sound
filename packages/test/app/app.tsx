@@ -3,7 +3,7 @@ import React from "react";
 const App = () => {
   return (
     <div className="app">
-      <h1>I'm React running in Electron App!!</h1>
+      <p className="text-xl">I'm React running in Electron App!!</p>
     </div>
   );
 };
