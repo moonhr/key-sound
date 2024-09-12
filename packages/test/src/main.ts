@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Tray, Menu, nativeImage } from "electron";
+import { app, BrowserWindow, Tray, nativeImage } from "electron";
 // import { TrayMenu } from "./electron/TrayMenu";
 import * as path from "path";
 
@@ -19,7 +19,7 @@ function createMenuWindow() {
   });
 
   // Next.js 앱의 경로를 지정합니다.
-  const nextAppPath = path.join(__dirname, "index.html"); // 'dist'는 빌드된 파일이 저장되는 폴더
+  const nextAppPath = path.join(__dirname, "index.html");
   menuWindow.loadFile(nextAppPath);
 
   menuWindow.on("blur", () => {

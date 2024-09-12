@@ -4,7 +4,7 @@ const path = require("path");
 
 module.exports = {
   mode: "development",
-  entry: "./src/renderer.tsx",
+  entry: "./src/public/renderer.tsx",
   target: "electron-renderer",
   devtool: "source-map",
   devServer: {
@@ -18,7 +18,7 @@ module.exports = {
     alias: {
       "@": path.resolve(__dirname, "src"),
     },
-    extensions: [".tsx", ".ts", ".js", "jsx"],
+    extensions: [".tsx", ".ts", ".js"],
   },
   module: {
     rules: [
@@ -39,8 +39,8 @@ module.exports = {
         ],
       },
       {
-        test: /\.s[ac]ss$/i,
-        use: ["style-loader", "css-loader", "sass-loader"],
+        test: /\.css$/,
+        use: ["style-loader", "css-loader", "postcss-loader"],
       },
     ],
   },
@@ -50,7 +50,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: "./src/index.html",
+      template: "./src/public/index.html",
     }),
     new CopyPlugin({
       patterns: [{ from: "src/assets", to: "assets" }],
