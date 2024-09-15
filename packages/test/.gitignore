@@ -1,0 +1,19 @@
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# testing
+/coverage
+
+/dist
+dist
+.dist
+/out/
+
+
+# misc
+.DS_Store
+*.pem
