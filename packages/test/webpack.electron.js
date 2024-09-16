@@ -6,16 +6,8 @@ module.exports = {
   // Electron Entrypoint
   entry: "./src/main.ts",
   target: "electron-main",
-  node: {
-    __dirname: false,
-    __filename: false,
-  },
   externals: {
     "electron-reload": "commonjs2 electron-reload",
-  },
-  node: {
-    __dirname: false,
-    __filename: false,
   },
   resolve: {
     alias: {
@@ -28,7 +20,14 @@ module.exports = {
       {
         test: /\.ts$/,
         include: /src/,
-        use: [{ loader: "ts-loader" }],
+        use: [
+          {
+            loader: "ts-loader",
+            options: {
+              transpileOnly: true, // Optional: Use this for faster builds
+            },
+          },
+        ],
       },
     ],
   },

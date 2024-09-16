@@ -12,7 +12,7 @@ module.exports = {
       directory: path.join(__dirname, "dist"),
     },
     compress: true,
-    port: 9000,
+    port: 3000,
     hot: true,
     historyApiFallback: true,
   },
@@ -49,7 +49,6 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "renderer.js",
-    publicPath: "/",
   },
   plugins: [
     new HtmlWebpackPlugin({

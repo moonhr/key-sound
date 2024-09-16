@@ -1,5 +1,5 @@
 const electronConfigs = require("./webpack.electron.js");
-const reactConfigs = require("./webpack.react.rev.js");
+const reactConfigs = require("./webpack.react.dev.js");
 
 module.exports = [electronConfigs, reactConfigs];
 
