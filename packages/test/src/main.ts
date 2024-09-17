@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Tray, nativeImage } from "electron";
+import { app, BrowserWindow, Tray, nativeImage, session } from "electron";
 // import { TrayMenu } from "./electron/TrayMenu";
 import * as path from "path";
 import * as dotenv from "dotenv";
@@ -10,8 +10,8 @@ let menuWindow: BrowserWindow;
 
 function createMenuWindow() {
   menuWindow = new BrowserWindow({
-    width: 300,
-    height: 400,
+    width: 1000,
+    height: 1000,
     frame: false,
     resizable: false,
     show: false,
@@ -26,11 +26,31 @@ function createMenuWindow() {
   // menuWindow.loadFile(nextAppPath);
 
   if (process.env.NODE_ENV === "development") {
-    menuWindow.loadURL("http://localhost:9000"); // React 개발 서버 주소
+    menuWindow.loadURL("http://localhost:3000"); // React 개발 서버 주소
+    menuWindow.webContents.openDevTools();
   } else {
     const nextAppPath = path.join(__dirname, "index.html");
     menuWindow.loadFile(nextAppPath);
+    menuWindow.webContents.openDevTools();
   }
+  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        "Content-Security-Policy": [
+          "default-src 'self';",
+          "script-src 'self' 'unsafe-inline';",
+          "style-src 'self' 'unsafe-inline';",
+          "img-src 'self' data:;",
+          "font-src 'self';",
+          "connect-src 'self';",
+          "frame-src 'self';",
+          "media-src 'self';",
+          "object-src 'none';",
+        ].join(" "),
+      },
+    });
+  });
 
   menuWindow.on("blur", () => {
     if (menuWindow && !menuWindow.webContents.isDevToolsOpened()) {
