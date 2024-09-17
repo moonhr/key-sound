@@ -31,6 +31,16 @@ module.exports = {
         ],
       },
       {
+        test: /\.(mp3|wav)$/, // mp3와 wav 파일을 처리
+        use: {
+          loader: "file-loader",
+          options: {
+            name: "[name].[hash].[ext]",
+            outputPath: "static/sound", // 출력될 디렉토리 경로
+          },
+        },
+      },
+      {
         test: /\.css$/,
         use: ["style-loader", "css-loader", "postcss-loader"],
       },
