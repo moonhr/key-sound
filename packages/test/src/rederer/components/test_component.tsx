@@ -1,33 +1,36 @@
-import { SoundButton } from "../../static/sound_button_interface";
 import React, { useState, useEffect, useRef } from "react";
-import "../../static/sound/brown-key.mp3";
+import { staticData } from "../../static/staticData";
 
-const staticData: SoundButton[] = [
-  {
-    id: "1",
-    name: "Brown Key",
-    soundFile: "../../static/sound/brown-key.mp3",
-    svg: "../../static/svg/BrownKey.svg",
-    activeSvg: "../../static/svg/BrownKey_active.svg",
-  },
-];
+// 현재 선택된 소리를 저장하는 전역 상태
+let currentAudio = new Audio(staticData[0].soundFile);
 
 export const TestComponent = () => {
   const [isActive, setIsActive] = useState(false);
-  const audioRef = useRef(new Audio(staticData[0].soundFile));
+  const audioRef = useRef(currentAudio);
 
+  // 키보드 이벤트 설정
   useEffect(() => {
-    const audio = audioRef.current;
+    const handleKeydown = () => {
+      currentAudio.currentTime = 0; // 매번 처음부터 재생
+      currentAudio.play();
+    };
+    // 모든 키 입력에 대해 이벤트 리스너 등록
+    window.addEventListener("keydown", handleKeydown);
     return () => {
-      audio.pause();
-      audio.currentTime = 0;
+      window.removeEventListener("keydown", handleKeydown);
     };
   }, []);
 
   const handleClick = () => {
     setIsActive(true);
-    audioRef.current.play();
-    setTimeout(() => setIsActive(false), 200); // Reset after 200ms
+
+    // 버튼이 클릭될 때 현재 소리를 바꿈
+    currentAudio.pause();
+    currentAudio = new Audio(staticData[0].soundFile); // 클릭된 버튼의 소리로 설정
+    audioRef.current = currentAudio;
+
+    currentAudio.play();
+    setTimeout(() => setIsActive(false), 200); // 200ms 후에 버튼 상태 초기화
   };
 
   return (
@@ -35,7 +38,7 @@ export const TestComponent = () => {
       <img
         src={isActive ? staticData[0].activeSvg : staticData[0].svg}
         alt={staticData[0].name}
-        style={{ width: "100px", height: "100px" }} // Adjust size as needed
+        style={{ width: "100px", height: "100px" }} // 크기 조정
       />
     </div>
   );
