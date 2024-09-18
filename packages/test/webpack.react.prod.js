@@ -32,17 +32,27 @@ module.exports = {
       },
       {
         test: /\.(mp3|wav)$/, // mp3와 wav 파일을 처리
-        use: {
-          loader: "file-loader",
-          options: {
-            name: "[name].[hash].[ext]",
-            outputPath: "static/sound", // 출력될 디렉토리 경로
-          },
+        type: "asset/resource",
+        generator: {
+          filename: "static/sound/[name][ext]", // 파일명을 해싱 없이 유지
         },
       },
       {
         test: /\.css$/,
         use: ["style-loader", "css-loader", "postcss-loader"],
+      },
+      {
+        test: /\.svg$/, // svg 파일 처리
+        oneOf: [
+          {
+            issuer: /\.[jt]sx?$/, // JS, TSX 파일에서 사용하는 경우
+            use: ["@svgr/webpack", "url-loader"],
+          },
+          {
+            type: "asset/resource", // 일반적으로 파일로 사용되는 경우
+            use: "file-loader",
+          },
+        ],
       },
     ],
   },
