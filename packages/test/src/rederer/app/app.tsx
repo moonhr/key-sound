@@ -8,7 +8,7 @@ import { staticData } from "../../static/staticData";
 import { TestComponent } from "../components/test_component";
 
 const AppContent: React.FC = () => {
-  const { sounds, addSound, currentSound, setCurrentSound } = useSoundContext();
+  // const { sounds, addSound, currentSound, setCurrentSound } = useSoundContext();
 
   // const handleOthersClick = () => {
   //   // Navigate to OthersPage
@@ -42,8 +42,8 @@ const AppContent: React.FC = () => {
 
 export const App: React.FC = () => {
   return (
-    <SoundProvider initialSounds={staticData}>
-      <AppContent />
-    </SoundProvider>
+    // <SoundProvider initialSounds={staticData}>
+    <AppContent />
+    // </SoundProvider>
   );
 };
