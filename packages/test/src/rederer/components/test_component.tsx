@@ -11,30 +11,30 @@ export const TestComponent = () => {
   const audioRef = useRef(currentAudio);
 
   useEffect(() => {
-    // main 프로세스에서 키 입력 이벤트 받기
-    ipcRenderer.on("key-pressed", (event, key) => {
-      console.log(`Key pressed: ${key}`);
+    const handleKeyPress = (event, key) => {
+      console.log(`Key pressed globally: ${key}`);
       currentAudio.currentTime = 0; // 매번 처음부터 재생
-      currentAudio.play();
-    });
+      audioRef.current.play();
+    };
+    ipcRenderer.on("key-pressed", handleKeyPress);
 
     return () => {
-      ipcRenderer.removeAllListeners("key-pressed");
+      ipcRenderer.removeListener("key-pressed", handleKeyPress);
     };
   }, []);
 
-  // 키보드 이벤트 설정
-  useEffect(() => {
-    const handleKeydown = () => {
-      currentAudio.currentTime = 0; // 매번 처음부터 재생
-      currentAudio.play();
-    };
-    // 모든 키 입력에 대해 이벤트 리스너 등록
-    window.addEventListener("keydown", handleKeydown);
-    return () => {
-      window.removeEventListener("keydown", handleKeydown);
-    };
-  }, []);
+  // // 키보드 이벤트 설정
+  // useEffect(() => {
+  //   const handleKeydown = () => {
+  //     currentAudio.currentTime = 0; // 매번 처음부터 재생
+  //     currentAudio.play();
+  //   };
+  //   // 모든 키 입력에 대해 이벤트 리스너 등록
+  //   window.addEventListener("keydown", handleKeydown);
+  //   return () => {
+  //     window.removeEventListener("keydown", handleKeydown);
+  //   };
+  // }, []);
 
   const handleClick = () => {
     setIsActive(true);
