@@ -7,6 +7,10 @@ module.exports = {
   entry: "./src/public/renderer.tsx",
   target: "web",
   resolve: {
+    fallback: {
+      fs: false, // 브라우저에서는 fs 모듈이 필요 없으므로 false 처리
+      path: require.resolve("path-browserify"), // path 모듈을 path-browserify로 대체
+    },
     alias: {
       "@": path.resolve(__dirname, "src"),
     },
