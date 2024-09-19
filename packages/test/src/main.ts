@@ -4,11 +4,13 @@ import {
   Tray,
   nativeImage,
   session,
+  ipcMain,
   globalShortcut,
 } from "electron";
 // import { TrayMenu } from "./electron/TrayMenu";
 import * as path from "path";
 import * as dotenv from "dotenv";
+// import ioHook from "iohook";
 
 dotenv.config(); // .env 파일의 변수들을 process.env에 로드합니다.
 
@@ -116,19 +118,25 @@ app.whenReady().then(() => {
     });
   });
 
-  // globalShortcut 설정
-  // globalShortcut.register("CommandOrControl+K", () => {
+  // ioHook.on("keydown", (event) => {
+  //   console.log(`Key pressed: ${event.keychar}`);
   //   if (menuWindow) {
-  //     menuWindow.webContents.send("key-pressed", "K");
+  //     menuWindow.webContents.send(
+  //       "key-pressed",
+  //       String.fromCharCode(event.keychar)
+  //     );
   //   }
   // });
+
+  // ioHook.start();
 });
 
-app.on("will-quit", () => {
-  globalShortcut.unregisterAll(); // 앱 종료 시 전역 단축키 해제
-});
+// app.on("will-quit", () => {
+//   globalShortcut.unregisterAll(); // 앱 종료 시 전역 단축키 해제
+// });
 
 app.on("window-all-closed", () => {
+  // ioHook.unload();
   if (process.platform !== "darwin") {
     app.quit();
   }
