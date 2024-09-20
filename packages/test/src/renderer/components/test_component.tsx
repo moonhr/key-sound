@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { staticData } from "../../static/staticData";
 
 const { ipcRenderer } = window.require("electron"); // Electron IPC 모듈 사용
+import { IpcRendererEvent } from "electron";
 
 // 현재 선택된 소리를 저장하는 전역 상태
 let currentAudio = new Audio(staticData[0].soundFile);
@@ -11,7 +12,7 @@ export const TestComponent = () => {
   const audioRef = useRef(currentAudio);
 
   useEffect(() => {
-    const handleKeyPress = (event, key) => {
+    const handleKeyPress = (event: IpcRendererEvent, key: string) => {
       console.log(`Key pressed globally: ${key}`);
       currentAudio.currentTime = 0; // 매번 처음부터 재생
       audioRef.current.play();

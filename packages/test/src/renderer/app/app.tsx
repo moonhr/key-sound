@@ -1,7 +1,7 @@
 import React from "react";
 import { SoundButton } from "../components/sound_button";
-import { SoundProvider, useSoundContext } from "../contexts/sound_context";
-import { useSoundEffect } from "../hooks/useSoundEffect";
+// import { SoundProvider, useSoundContext } from "../contexts/sound_context";
+// import { useSoundEffect } from "../hooks/useSoundEffect";
 import { dummyData } from "../../static/dummyData";
 import { staticData } from "../../static/staticData";
 
