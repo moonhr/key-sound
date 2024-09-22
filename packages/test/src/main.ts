@@ -37,6 +37,7 @@ function createMenuWindow() {
     menuWindow.loadFile(path.join(__dirname, "index.html"));
     menuWindow.webContents.openDevTools();
   }
+
   // session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
   //   callback({
   //     responseHeaders: {

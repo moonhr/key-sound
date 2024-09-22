@@ -40,11 +40,10 @@ const TestComponent = () => {
   }
 
   return (
-    <div onClick={handleClick} style={{ cursor: "pointer" }}>
+    <div onClick={handleClick}>
       <img
         src={isActive ? staticData[0].activeSvg : staticData[0].svg}
         alt={staticData[0].name}
-        style={{ width: "100px", height: "100px" }} // 크기 조정
       />
     </div>
   );
