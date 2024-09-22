@@ -1,52 +1,43 @@
 import React, { useState, useEffect, useRef } from "react";
 import { staticData } from "../../static/staticData";
 
-const { ipcRenderer } = window.require("electron"); // Electron IPC 모듈 사용
-import { IpcRendererEvent } from "electron";
-
-// 현재 선택된 소리를 저장하는 전역 상태
-let currentAudio = new Audio(staticData[0].soundFile);
-
-export const TestComponent = () => {
+const TestComponent = () => {
   const [isActive, setIsActive] = useState(false);
-  const audioRef = useRef(currentAudio);
+  const audioRef = useRef(new Audio(staticData[0].soundFile)); // 초기 오디오 객체
 
   useEffect(() => {
-    const handleKeyPress = (event: IpcRendererEvent, key: string) => {
+    const handleKeyPress = (event: any, key: string) => {
       console.log(`Key pressed globally: ${key}`);
-      currentAudio.currentTime = 0; // 매번 처음부터 재생
-      audioRef.current.play();
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0; // 매번 처음부터 재생
+        audioRef.current.play();
+      }
     };
-    ipcRenderer.on("key-pressed", handleKeyPress);
+
+    window.electron.ipcRenderer.on("key-pressed", handleKeyPress); // preload를 통한 ipcRenderer 접근
 
     return () => {
-      ipcRenderer.removeListener("key-pressed", handleKeyPress);
+      window.electron.ipcRenderer.removeListener("key-pressed", handleKeyPress); // 이벤트 해제
     };
   }, []);
-
-  // // 키보드 이벤트 설정
-  // useEffect(() => {
-  //   const handleKeydown = () => {
-  //     currentAudio.currentTime = 0; // 매번 처음부터 재생
-  //     currentAudio.play();
-  //   };
-  //   // 모든 키 입력에 대해 이벤트 리스너 등록
-  //   window.addEventListener("keydown", handleKeydown);
-  //   return () => {
-  //     window.removeEventListener("keydown", handleKeydown);
-  //   };
-  // }, []);
 
   const handleClick = () => {
     setIsActive(true);
 
     // 버튼이 클릭될 때 현재 소리를 바꿈
-    currentAudio.pause();
-    currentAudio = new Audio(staticData[0].soundFile);
-    audioRef.current = currentAudio;
-    currentAudio.play();
-    setTimeout(() => setIsActive(false), 200); // 200ms 후에 버튼 상태 초기화
+    if (audioRef.current) {
+      audioRef.current.pause(); // 이전 오디오 중지
+      audioRef.current = new Audio(staticData[0].soundFile); // 새로운 오디오로 교체
+      audioRef.current.play(); // 새로운 오디오 재생
+    }
+
+    // 200ms 후에 버튼 상태 초기화
+    setTimeout(() => setIsActive(false), 200);
   };
+
+  if (!staticData.length) {
+    return <div>Loading...</div>; // 데이터가 로딩 중일 때
+  }
 
   return (
     <div onClick={handleClick} style={{ cursor: "pointer" }}>
@@ -58,3 +49,5 @@ export const TestComponent = () => {
     </div>
   );
 };
+
+export default TestComponent;
