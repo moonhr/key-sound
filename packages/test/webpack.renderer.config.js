@@ -36,12 +36,8 @@ module.exports = {
         test: /\.svg$/,
         oneOf: [
           {
-            issuer: /\.[jt]sx?$/, // JS, TSX 파일에서 사용하는 경우
-            use: ["@svgr/webpack"],
-            type: "asset/resource",
-            generator: {
-              filename: "src/static/svg/[name][ext]", // 파일명을 해싱 없이 유지
-            },
+            issuer: /\.[jt]sx?$/,
+            use: ["@svgr/webpack", "url-loader"],
           },
           {
             type: "asset/resource", // 일반적으로 파일로 사용되는 경우
