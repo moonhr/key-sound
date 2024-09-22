@@ -7,10 +7,8 @@ import {
   ipcMain,
   globalShortcut,
 } from "electron";
-// import { TrayMenu } from "./electron/TrayMenu";
 import * as path from "path";
 import * as dotenv from "dotenv";
-// import ioHook from "iohook";
 
 dotenv.config(); // .env 파일의 변수들을 process.env에 로드합니다.
 
@@ -25,41 +23,38 @@ function createMenuWindow() {
     resizable: false,
     show: false,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
+      preload: path.join(__dirname, "preload.js"),
+      nodeIntegration: false,
+      contextIsolation: true,
     },
   });
 
-  // Next.js 앱의 경로를 지정합니다.
-  // const nextAppPath = path.join(__dirname, "index.html");
-  // menuWindow.loadFile(nextAppPath);
-
   if (process.env.NODE_ENV === "development") {
-    menuWindow.loadURL("http://localhost:3000"); // React 개발 서버 주소
+    menuWindow.loadFile(path.join(__dirname, "index.html"));
+    // menuWindow.loadURL("http://localhost:8080");
     menuWindow.webContents.openDevTools();
   } else {
-    const nextAppPath = path.join(__dirname, "index.html");
-    menuWindow.loadFile(nextAppPath);
+    menuWindow.loadFile(path.join(__dirname, "index.html"));
     menuWindow.webContents.openDevTools();
   }
-  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-    callback({
-      responseHeaders: {
-        ...details.responseHeaders,
-        "Content-Security-Policy": [
-          "default-src 'self';",
-          "script-src 'self' 'unsafe-inline';",
-          "style-src 'self' 'unsafe-inline';",
-          "img-src 'self' data:;",
-          "font-src 'self';",
-          "connect-src 'self';",
-          "frame-src 'self';",
-          "media-src 'self';",
-          "object-src 'none';",
-        ].join(" "),
-      },
-    });
-  });
+  // session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+  //   callback({
+  //     responseHeaders: {
+  //       ...details.responseHeaders,
+  //       "Content-Security-Policy": [
+  //         "default-src 'self';",
+  //         "script-src 'self' 'unsafe-inline';",
+  //         "style-src 'self' 'unsafe-inline';",
+  //         "img-src 'self' data:;",
+  //         "font-src 'self';",
+  //         "connect-src 'self';",
+  //         "frame-src 'self';",
+  //         "media-src 'self';",
+  //         "object-src 'none';",
+  //       ].join(" "),
+  //     },
+  //   });
+  // });
 
   menuWindow.on("blur", () => {
     if (menuWindow && !menuWindow.webContents.isDevToolsOpened()) {
@@ -117,23 +112,7 @@ app.whenReady().then(() => {
       menuWindow.webContents.send("key-pressed", key); // 렌더러 프로세스로 키 이벤트 전송
     });
   });
-
-  // ioHook.on("keydown", (event) => {
-  //   console.log(`Key pressed: ${event.keychar}`);
-  //   if (menuWindow) {
-  //     menuWindow.webContents.send(
-  //       "key-pressed",
-  //       String.fromCharCode(event.keychar)
-  //     );
-  //   }
-  // });
-
-  // ioHook.start();
 });
-
-// app.on("will-quit", () => {
-//   globalShortcut.unregisterAll(); // 앱 종료 시 전역 단축키 해제
-// });
 
 app.on("window-all-closed", () => {
   // ioHook.unload();
