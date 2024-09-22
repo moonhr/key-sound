@@ -5,7 +5,7 @@ import { SoundButton } from "../components/sound_button";
 import { dummyData } from "../../static/dummyData";
 import { staticData } from "../../static/staticData";
 
-import { TestComponent } from "../components/test_component";
+import TestComponent from "../components/test_component";
 
 const AppContent: React.FC = () => {
   // const { sounds, addSound, currentSound, setCurrentSound } = useSoundContext();
