@@ -109,7 +109,7 @@ app.whenReady().then(() => {
   // 각 키에 대해 globalShortcut 등록
   keys.forEach((key) => {
     globalShortcut.register(key, () => {
-      console.log(`Global key pressed: ${key}`);
+      console.log(`Server global key pressed: ${key}`);
       menuWindow.webContents.send("key-pressed", key); // 렌더러 프로세스로 키 이벤트 전송
     });
   });
