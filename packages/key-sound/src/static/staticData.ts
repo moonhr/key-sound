@@ -1,17 +1,60 @@
 import { SoundButton } from "./sound_button_interface";
 import BrownKeySound from "./sound/brown-key.mp3";
+import BlueKeySound from "./sound/blue-key.mp3";
+import BlackKeySound from "./sound/black-key.mp3";
+import RedKeySound from "./sound/red-key.mp3";
+import StandardKeySound from "./sound/standard-key.mp3";
+import DuckKeySound from "./sound/duck-key.mp3";
+
 import BrownKey from "./svg/BrownKey.svg";
+import BlueKey from "./svg/BlueKey.svg";
+import BlackKey from "./svg/BlackKey.svg";
+import RedKey from "./svg/RedKey.svg";
+import StandardKey from "./svg/Standard.svg";
+import DuckKey from "./svg/DuckKey.svg";
+
 import BrownKeyActive from "./svg/BrownKey_active.svg";
+import BlueKeyActive from "./svg/BlueKey_active.svg";
+import BlackKeyActive from "./svg/BlackKey_active.svg";
+import RedKeyActive from "./svg/RedKey_active.svg";
+import StandardKeyActive from "./svg/Standard_active.svg";
+import DuckKeyActive from "./svg/DuckKey_active.svg";
 
-// const BrownKeySound = require("./sound/brown-key.mp3") as string;
-// const BrownKey = require("./svg/BrownKey.svg") as string;
-// const BrownKeyActive = require("./svg/BrownKey_active.svg") as string;
-
-export const staticData: SoundButton[] = [
-  {
+export const staticData: Record<string, SoundButton> = {
+  "Brown Key": {
     name: "Brown Key",
     soundFile: BrownKeySound,
     svg: BrownKey,
     activeSvg: BrownKeyActive,
   },
-];
+  "Blue Key": {
+    name: "Blue Key",
+    soundFile: BlueKeySound,
+    svg: BlueKey,
+    activeSvg: BlueKeyActive,
+  },
+  "Black Key": {
+    name: "Black Key",
+    soundFile: BlackKeySound,
+    svg: BlackKey,
+    activeSvg: BlackKeyActive,
+  },
+  "Red Key": {
+    name: "Red Key",
+    soundFile: RedKeySound,
+    svg: RedKey,
+    activeSvg: RedKeyActive,
+  },
+  "Standard Key": {
+    name: "Standard Key",
+    soundFile: StandardKeySound,
+    svg: StandardKey,
+    activeSvg: StandardKeyActive,
+  },
+  "Duck Key": {
+    name: "Duck Key",
+    soundFile: DuckKeySound,
+    svg: DuckKey,
+    activeSvg: DuckKeyActive,
+  },
+};

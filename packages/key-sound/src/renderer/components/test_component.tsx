@@ -2,49 +2,62 @@ import React, { useState, useEffect, useRef } from "react";
 import { staticData } from "../../static/staticData";
 
 const TestComponent = () => {
-  const [isActive, setIsActive] = useState(false);
-  const audioRef = useRef(new Audio(staticData[0].soundFile)); // 초기 오디오 객체
+  const [isActive, setIsActive] = useState<string | null>(null);
+  const [currentKey, setCurrentKey] = useState<string>("Standard Key");
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    const handleKeyPress = (event: any, key: string) => {
-      console.log(`Key pressed globally: ${key}`);
+    // 현재 선택된 키에 해당하는 오디오 객체 생성
+    audioRef.current = new Audio(staticData[currentKey].soundFile);
+
+    const handleKeyPress = (event: any, pressedKey: string) => {
+      console.log(`Key pressed: ${pressedKey}`);
       if (audioRef.current) {
-        audioRef.current.currentTime = 0; // 매번 처음부터 재생
+        audioRef.current.currentTime = 0;
         audioRef.current.play();
       }
     };
 
-    window.electron.ipcRenderer.on("key-pressed", handleKeyPress); // preload를 통한 ipcRenderer 접근
+    // IPC 리스너 설정
+    window.electron.ipcRenderer.on("key-pressed", handleKeyPress);
 
     return () => {
-      window.electron.ipcRenderer.removeListener("key-pressed", handleKeyPress); // 이벤트 해제
+      // 컴포넌트 언마운트 시 IPC 리스너 제거
+      window.electron.ipcRenderer.removeListener("key-pressed", handleKeyPress);
+      // 오디오 객체 정리
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
     };
-  }, []);
+  }, [currentKey]);
 
-  const handleClick = () => {
-    setIsActive(true);
+  const handleClick = (key: string) => {
+    setIsActive(key);
+    setCurrentKey(key);
 
-    // 버튼이 클릭될 때 현재 소리를 바꿈
-    if (audioRef.current) {
-      audioRef.current.pause(); // 이전 오디오 중지
-      audioRef.current = new Audio(staticData[0].soundFile); // 새로운 오디오로 교체
-      audioRef.current.play(); // 새로운 오디오 재생
-    }
+    // 새로운 오디오 객체 생성 및 재생
+    audioRef.current = new Audio(staticData[key].soundFile);
+    audioRef.current.play();
 
-    // 200ms 후에 버튼 상태 초기화
-    setTimeout(() => setIsActive(false), 200);
+    setTimeout(() => setIsActive(null), 200);
   };
 
-  if (!staticData.length) {
-    return <div>Loading...</div>; // 데이터가 로딩 중일 때
+  if (Object.keys(staticData).length === 0) {
+    return <div>Loading...</div>;
   }
 
   return (
-    <div onClick={handleClick}>
-      <img
-        src={isActive ? staticData[0].activeSvg : staticData[0].svg}
-        alt={staticData[0].name}
-      />
+    <div>
+      {Object.entries(staticData).map(([key, item]) => (
+        <div key={key} onClick={() => handleClick(key)}>
+          <img
+            src={isActive === key ? item.activeSvg : item.svg}
+            alt={item.name}
+          />
+        </div>
+      ))}
+      <p>Current selected sound: {currentKey}</p>
     </div>
   );
 };
