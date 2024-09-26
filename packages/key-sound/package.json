@@ -5,7 +5,7 @@
   "scripts": {
     "build": "webpack --config webpack.config.js",
     "react:dev": "webpack serve --config webpack.renderer.config.js",
-    "electron:dev": "webpack --config webpack.main.js && electron ./dist/main.js",
+    "electron:dev": "webpack --config webpack.main.config.js && electron ./dist/main.js",
     "dev": "concurrently \"npm run react:dev\" \"npm run electron:dev\"",
     "react": "webpack serve --config webpack.renderer.config.js",
     "start": "concurrently \"npm run react\" \"npm run build && electron-forge start\"",
