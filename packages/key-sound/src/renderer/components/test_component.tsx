@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { staticData } from "../../static/staticData";
 
 const TestComponent = () => {
@@ -6,37 +6,33 @@ const TestComponent = () => {
   const [currentKey, setCurrentKey] = useState<string>("Standard Key");
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  const handleKeyPress = useCallback((event: any, pressedKey: string) => {
+    console.log(`Key pressed: ${pressedKey}`);
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play();
+    }
+  }, []);
+
   useEffect(() => {
-    // 현재 선택된 키에 해당하는 오디오 객체 생성
-    audioRef.current = new Audio(staticData[currentKey].soundFile);
-
-    const handleKeyPress = (event: any, pressedKey: string) => {
-      console.log(`Key pressed: ${pressedKey}`);
-      if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play();
-      }
-    };
-
     // IPC 리스너 설정
     window.electron.ipcRenderer.on("key-pressed", handleKeyPress);
 
     return () => {
       // 컴포넌트 언마운트 시 IPC 리스너 제거
       window.electron.ipcRenderer.removeListener("key-pressed", handleKeyPress);
-      // 오디오 객체 정리
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
     };
-  }, [currentKey]);
+  }, [handleKeyPress]);
 
   const handleClick = (key: string) => {
     setIsActive(key);
     setCurrentKey(key);
 
     // 새로운 오디오 객체 생성 및 재생
+    if (audioRef.current) {
+      audioRef.current.pause(); // 이전 오디오 멈추기
+    }
+
     audioRef.current = new Audio(staticData[key].soundFile);
     audioRef.current.play();
 

@@ -6,14 +6,24 @@ import {
   session,
   ipcMain,
   globalShortcut,
+  systemPreferences,
 } from "electron";
 import * as path from "path";
 import * as dotenv from "dotenv";
+
 
 dotenv.config(); // .env 파일의 변수들을 process.env에 로드합니다.
 
 let tray: Tray;
 let menuWindow: BrowserWindow;
+
+// Mac OS에서 보조 기능 권한 확인
+if (process.platform === "darwin") {
+  const accessEnabled = systemPreferences.isTrustedAccessibilityClient(false);
+  if (!accessEnabled) {
+    console.log("Accessibility access is not enabled. Please enable it.");
+  }
+}
 
 function createMenuWindow() {
   menuWindow = new BrowserWindow({
@@ -100,6 +110,7 @@ app.whenReady().then(() => {
 
   tray.on("click", toggleMenuWindow);
 
+
   // 알파벳과 숫자 배열 생성
   const keys = [
     ..."abcdefghijklmnopqrstuvwxyz".split(""), // a-z 알파벳
@@ -108,10 +119,17 @@ app.whenReady().then(() => {
 
   // 각 키에 대해 globalShortcut 등록
   keys.forEach((key) => {
-    globalShortcut.register(key, () => {
-      console.log(`Server global key pressed: ${key}`);
-      menuWindow.webContents.send("key-pressed", key); // 렌더러 프로세스로 키 이벤트 전송
-    });
+    // 키가 이미 등록되었는지 확인
+    const isRegistered = globalShortcut.isRegistered(key);
+    if (!isRegistered) {
+      globalShortcut.register(key, () => {
+        console.log(`Server global key pressed: ${key}`);
+        menuWindow.webContents.send("key-pressed", key); // 렌더러 프로세스로 키 이벤트 전송
+      });
+      console.log(`${key} has been registered.`);
+    } else {
+      console.log(`${key} is already registered.`);
+    }
   });
 });
 
