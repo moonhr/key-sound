@@ -11,7 +11,6 @@ import {
 import * as path from "path";
 import * as dotenv from "dotenv";
 
-
 dotenv.config(); // .env 파일의 변수들을 process.env에 로드합니다.
 
 let tray: Tray;
@@ -110,27 +109,26 @@ app.whenReady().then(() => {
 
   tray.on("click", toggleMenuWindow);
 
-
   // 알파벳과 숫자 배열 생성
-  const keys = [
-    ..."abcdefghijklmnopqrstuvwxyz".split(""), // a-z 알파벳
-    ..."0123456789".split(""), // 0-9 숫자
-  ];
+  // const keys = [
+  //   ..."abcdefghijklmnopqrstuvwxyz".split(""), // a-z 알파벳
+  //   ..."0123456789".split(""), // 0-9 숫자
+  // ];
 
   // 각 키에 대해 globalShortcut 등록
-  keys.forEach((key) => {
-    // 키가 이미 등록되었는지 확인
-    const isRegistered = globalShortcut.isRegistered(key);
-    if (!isRegistered) {
-      globalShortcut.register(key, () => {
-        console.log(`Server global key pressed: ${key}`);
-        menuWindow.webContents.send("key-pressed", key); // 렌더러 프로세스로 키 이벤트 전송
-      });
-      console.log(`${key} has been registered.`);
-    } else {
-      console.log(`${key} is already registered.`);
-    }
-  });
+  // keys.forEach((key) => {
+  //   // 키가 이미 등록되었는지 확인
+  //   const isRegistered = globalShortcut.isRegistered(key);
+  //   if (!isRegistered) {
+  //     globalShortcut.register(key, () => {
+  //       console.log(`Server global key pressed: ${key}`);
+  //       menuWindow.webContents.send("key-pressed", key); // 렌더러 프로세스로 키 이벤트 전송
+  //     });
+  //     console.log(`${key} has been registered.`);
+  //   } else {
+  //     console.log(`${key} is already registered.`);
+  //   }
+  // });
 });
 
 app.on("window-all-closed", () => {
