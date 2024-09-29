@@ -1,11 +1,12 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
-// const webpack = require("webpack");
 
 module.exports = {
   mode: "development",
-  entry: "./src/public/renderer.tsx",
+  entry: {
+    main: "./src/public/renderer.tsx",
+  },
   target: "electron-renderer",
   module: {
     rules: [
@@ -22,7 +23,6 @@ module.exports = {
       {
         test: /\.(mp3|wav)$/, // mp3와 wav 파일을 처리
         type: "asset/resource",
-        // use: ["url-loader", "file-loader"],
         generator: {
           filename: "src/static/sound/[name][ext]", // 파일명을 해싱 없이 유지
         },
@@ -46,8 +46,6 @@ module.exports = {
             },
           },
         ],
-        // type: "asset/resource",
-        // use: ["@svgr/webpack", "url-loader"],
       },
     ],
   },
@@ -55,7 +53,7 @@ module.exports = {
     extensions: [".ts", ".tsx", ".js", ".jsx"],
   },
   output: {
-    filename: "renderer.js",
+    filename: "[name].[contenthash].js", // 각 청크에 대해 고유한 이름을 생성
     path: path.resolve(__dirname, "dist"),
   },
   plugins: [

@@ -16,9 +16,6 @@ module.exports = {
       },
     ],
   },
-  // externals: {
-  //   "electron-reload": "commonjs2 electron-reload",
-  // },
   resolve: {
     extensions: [".ts", ".js"],
   },
