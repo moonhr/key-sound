@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, ReactNode } from "react";
 
 type SoundFileContextType = {
   soundFile: File | null;
@@ -10,7 +10,7 @@ const SoundFileContext = createContext<SoundFileContextType | undefined>(
   undefined
 );
 
-export const SoundFileProvider: React.FC<{ children: React.ReactNode }> = ({
+export const SoundFileProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   //불러온 파일을 저장할 상태
