@@ -1,13 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
+// KeycapStatic.tsx
+import React, { useState, useRef, useEffect } from "react";
 import { staticData } from "../../../static/staticData";
 
-interface TestComponentProps {
+interface KeycapStaticProps {
   onSaveKeySound: (key: string) => void; // 부모 컴포넌트로 선택한 키를 전달하기 위한 prop
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ onSaveKeySound }) => {
+const KeycapStatic: React.FC<KeycapStaticProps> = ({ onSaveKeySound }) => {
   const [isActive, setIsActive] = useState<string | null>(null);
   const [currentKey, setCurrentKey] = useState<string>("Standard Key");
+  const [selectedKey, setSelectedKey] = useState<string | null>(null); // 별도의 상태로 선택된 key 저장
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // 키보드 입력 처리
@@ -39,6 +41,9 @@ const TestComponent: React.FC<TestComponentProps> = ({ onSaveKeySound }) => {
   const handleClick = (key: string) => {
     setIsActive(key);
     setCurrentKey(key);
+    setSelectedKey(key); // Save 시 전달할 key는 따로 저장
+    console.log(key);
+    console.log(isActive);
 
     // 새로운 오디오 객체 생성 및 재생
     if (audioRef.current) {
@@ -51,11 +56,12 @@ const TestComponent: React.FC<TestComponentProps> = ({ onSaveKeySound }) => {
     setTimeout(() => setIsActive(null), 200);
   };
 
+  // Save 버튼 클릭 시 부모 컴포넌트로 선택한 키 전달
   const handleSave = () => {
-    if (isActive) {
-      onSaveKeySound(isActive);
+    if (selectedKey) {
+      onSaveKeySound(selectedKey); // 선택된 키를 부모 컴포넌트로 전달
     }
-    console.log(`Saved sound for key: ${isActive}`);
+    console.log(`Saved sound for key: ${selectedKey}`);
   };
 
   if (Object.keys(staticData).length === 0) {
@@ -78,4 +84,4 @@ const TestComponent: React.FC<TestComponentProps> = ({ onSaveKeySound }) => {
   );
 };
 
-export default TestComponent;
+export default KeycapStatic;
