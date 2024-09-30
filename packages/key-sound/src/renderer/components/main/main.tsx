@@ -1,11 +1,11 @@
 import React from "react";
-import Keyboard from "./keyboard/keyboard";
+import Piano from "./piano/piano";
 import Playbar from "./playbar/playbar";
 
 const Main = () => {
   return (
     <div>
-      <Keyboard />
+      <Piano />
       <Playbar />
     </div>
   );
