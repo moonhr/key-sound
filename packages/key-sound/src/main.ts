@@ -13,6 +13,7 @@ dotenv.config(); // .env 파일의 변수들을 process.env에 로드합니다.
 
 let mainWindow: BrowserWindow;
 
+//메인창 속성
 function createMainWindow() {
   mainWindow = new BrowserWindow({
     width: 1000,
@@ -25,11 +26,8 @@ function createMainWindow() {
       contextIsolation: true,
     },
   });
-  mainWindow.show();
   mainWindow.loadFile(path.join(__dirname, "index.html"));
   mainWindow.webContents.openDevTools();
-
-  return mainWindow;
 }
 
 app.whenReady().then(() => {
