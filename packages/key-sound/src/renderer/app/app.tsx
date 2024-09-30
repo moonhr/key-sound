@@ -4,14 +4,17 @@ import React from "react";
 import Top from "../components/top/top";
 import Main from "../components/main/main";
 import { SoundFileProvider } from "../contexts/soune_file_context";
+import { KeycapProvider } from "../contexts/keycap_context";
 
 const AppContent: React.FC = () => {
   return (
     <div>
-      <SoundFileProvider>
-        <Top />
-      </SoundFileProvider>
-      <Main />
+      <KeycapProvider>
+        <SoundFileProvider>
+          <Top />
+        </SoundFileProvider>
+        <Main />
+      </KeycapProvider>
       {/* <TestComponent /> */}
     </div>
   );
