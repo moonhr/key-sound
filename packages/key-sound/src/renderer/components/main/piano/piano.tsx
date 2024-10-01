@@ -1,44 +1,91 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useKeycap } from "../../../contexts/keycap_context"; // keycap 상태 불러오기
-
-const whiteKeys = ["a", "s", "d", "f", "g", "h", "j", "k", "l"];
-const blackKeys = ["w", "e", "t", "y", "u", "o", "p"];
+import "../../../style/piano.css";
+import keyPitchMap from "./keyPitchMap";
 
 const Piano = () => {
   const { selectedSound } = useKeycap(); // 선택된 사운드 가져오기
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  console.log("piano selectedSound", selectedSound);
+  const audioContextRef = useRef<AudioContext | null>(null); // AudioContext 참조
+  const [activeKeys, setActiveKeys] = useState<string[]>([]); // 현재 눌린 키 저장
 
-  const playSound = (key: string) => {
-    if (audioRef.current) {
-      audioRef.current.pause(); // 이전 사운드 멈추기
-    }
+  // 오디오 버퍼를 로드하는 함수
+  const loadSound = async (url: string) => {
+    if (!audioContextRef.current) return;
 
-    if (selectedSound) {
-      // keyof를 사용하여 selectedSound에서 사운드 URL 가져오기
-      const soundUrl = selectedSound;
-      if (soundUrl) {
-        audioRef.current = new Audio(soundUrl);
-        audioRef.current.play();
-      }
-    }
+    const response = await fetch(url);
+    const arrayBuffer = await response.arrayBuffer();
+    const audioBuffer = await audioContextRef.current.decodeAudioData(
+      arrayBuffer
+    );
+
+    return audioBuffer;
   };
 
-  const handleKeyPress = (event: KeyboardEvent) => {
-    const pressedKey = event.key.toLowerCase(); // 눌린 키
-    console.log("눌림");
-    console.log(event.key);
-    if (whiteKeys.includes(pressedKey) || blackKeys.includes(pressedKey)) {
-      playSound(pressedKey); // 흰건반 또는 검은건반이면 사운드 재생
+  // 사운드 재생 함수
+  const playSound = async (key: string) => {
+    if (!selectedSound) return; // 사운드가 없으면 종료
+
+    // AudioContext가 없다면 새로 생성
+    if (
+      !audioContextRef.current ||
+      audioContextRef.current.state === "closed"
+    ) {
+      audioContextRef.current = new AudioContext();
+    } else if (audioContextRef.current.state === "suspended") {
+      // 상태가 suspended인 경우 resume() 호출
+      await audioContextRef.current.resume();
+    }
+
+    const audioContext = audioContextRef.current;
+
+    // 오디오 버퍼 로드
+    const audioBuffer = await loadSound(selectedSound);
+    if (!audioBuffer) return;
+
+    // AudioBufferSourceNode 생성
+    const source = audioContext.createBufferSource();
+    source.buffer = audioBuffer;
+
+    // 피치 조절: playbackRate를 사용하여 피치를 조정
+    const frequency = keyPitchMap[key]; // key에 맞는 주파수 가져오기
+    const baseFrequency = 261.63; // C4(도)의 주파수
+    const playbackRate = frequency / baseFrequency; // 주파수를 재생 속도로 변환
+
+    // 재생 속도 설정 (피치 조정)
+    source.playbackRate.value = playbackRate;
+
+    // 소스를 AudioContext의 destination에 연결
+    source.connect(audioContext.destination);
+
+    // 사운드 재생
+    source.start();
+
+    // 눌린 키 배열에 추가
+    setActiveKeys((prevKeys) => [...prevKeys, key]);
+
+    // 눌린 키 배열에서 해당 키를 200ms 후에 제거
+    setTimeout(() => {
+      setActiveKeys((prevKeys) => prevKeys.filter((k) => k !== key));
+    }, 200);
+  };
+
+  // 키보드 입력 처리
+  const handleKeyDown = (event: KeyboardEvent) => {
+    const key = event.key;
+    console.log(key);
+    if (keyPitchMap[key]) {
+      playSound(key); // key에 맞는 피치로 사운드 재생
     }
   };
 
   useEffect(() => {
-    // 키보드 이벤트 리스너 등록
-    window.addEventListener("keydown", handleKeyPress);
+    window.addEventListener("keydown", handleKeyDown);
+
     return () => {
-      // 컴포넌트 언마운트 시 이벤트 리스너 제거
-      window.removeEventListener("keydown", handleKeyPress);
+      window.removeEventListener("keydown", handleKeyDown);
+      if (audioContextRef.current) {
+        audioContextRef.current.close(); // AudioContext 종료
+      }
     };
   }, [selectedSound]);
 
@@ -48,6 +95,17 @@ const Piano = () => {
         키보드를 사용하여 피아노를 연주하세요! (a-s-d-f-g-h-j-k-l 및
         w-e-t-y-u-o-p)
       </p>
+      <div className="piano-keys">
+        {/* 눌린 키에 따라 스타일 적용 */}
+        {Object.keys(keyPitchMap).map((key) => (
+          <div
+            key={key}
+            className={`piano-key ${activeKeys.includes(key) ? "active" : ""}`}
+          >
+            {key.toUpperCase()}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
