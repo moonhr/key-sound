@@ -12,7 +12,8 @@ const Piano = () => {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
   );
-  const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]); // 녹음된 청크 저장
+  const recordedChunksRef = useRef<Blob[]>([]); // 녹음된 청크 저장
+  const [isRecording, setIsRecording] = useState(false); // 녹음 상태 저장
 
   // 오디오 버퍼를 로드하는 함수
   const loadSound = async (url: string) => {
@@ -49,12 +50,11 @@ const Piano = () => {
     const playbackRate = frequency / baseFrequency;
     source.playbackRate.value = playbackRate;
 
-    // 소스를 AudioContext의 destination에 연결
-    source.connect(audioContext.destination);
-
     // 사운드 재생
+    source.connect(audioContext.destination);
     source.start();
 
+    // 눌린 키 표시
     setActiveKeys((prevKeys) => [...prevKeys, key]);
     setTimeout(() => {
       setActiveKeys((prevKeys) => prevKeys.filter((k) => k !== key));
@@ -62,39 +62,80 @@ const Piano = () => {
   };
 
   // 녹음 시작
-  const startRecording = () => {
+  const startRecording = async () => {
     if (!audioContextRef.current) {
       audioContextRef.current = new AudioContext();
     }
 
     const destination = audioContextRef.current.createMediaStreamDestination();
-    const recorder = new MediaRecorder(destination.stream);
 
+    // MediaRecorder 지원 여부 확인
+    if (!MediaRecorder) {
+      console.error("MediaRecorder API is not supported in this browser.");
+      return;
+    }
+
+    const recorder = new MediaRecorder(destination.stream);
+    setMediaRecorder(recorder); // MediaRecorder 상태 설정
+
+    // MediaRecorder 데이터가 준비되면 recordedChunksRef에 추가
     recorder.ondataavailable = (event) => {
       if (event.data.size > 0) {
-        setRecordedChunks((prev) => [...prev, event.data]);
+        recordedChunksRef.current.push(event.data);
       }
     };
 
-    recorder.onstop = () => {
-      const blob = new Blob(recordedChunks, { type: "audio/mp3" });
-      const url = URL.createObjectURL(blob);
-      // 여기서 blob을 사용하여 파일을 저장하거나 다운로드 링크를 생성할 수 있습니다.
+    // 에러 처리
+    recorder.onerror = (event) => {
+      console.error("Error during recording:", event);
     };
 
-    // 녹음을 시작합니다.
-    recorder.start();
-    setMediaRecorder(recorder);
+    recorder.onstop = () => {
+      const blob = new Blob(recordedChunksRef.current, { type: "audio/webm" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "recording.webm"; // 다운로드 파일 이름
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      recordedChunksRef.current = []; // 녹음된 청크 초기화
+      setMediaRecorder(null); // MediaRecorder 초기화
+      setIsRecording(false); // 녹음 상태 변경
+    };
+
+    // 마이크 권한 요청 (사용자에게 권한 요청)
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const source = audioContextRef.current.createMediaStreamSource(stream);
+      source.connect(destination); // 스트림 연결
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
+      return;
+    }
+
+    recorder.start(); // 녹음 시작
+    setIsRecording(true); // 녹음 상태 변경
   };
 
   // 녹음 중지
   const stopRecording = () => {
-    mediaRecorder?.stop();
-    setMediaRecorder(null);
+    if (mediaRecorder) {
+      mediaRecorder.stop(); // 녹음 중지
+    }
   };
 
-  // 키보드 입력 처리
+  // 스페이스바 키 입력 처리
   const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.code === "Space") {
+      event.preventDefault(); // 기본 스페이스바 동작 방지
+      if (isRecording) {
+        stopRecording(); // 녹음 중지
+      } else {
+        startRecording(); // 녹음 시작
+      }
+    }
+
     const key = event.key;
     if (keyPitchMap[key]) {
       playSound(key);
@@ -128,7 +169,9 @@ const Piano = () => {
           />
         ))}
       </div>
-      <Playbar startRecording={startRecording} stopRecording={stopRecording} />
+      <button onClick={isRecording ? stopRecording : startRecording}>
+        {isRecording ? "Stop Recording" : "Start Recording"}
+      </button>{" "}
     </div>
   );
 };
