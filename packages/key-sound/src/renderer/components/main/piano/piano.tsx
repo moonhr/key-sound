@@ -2,11 +2,17 @@ import React, { useEffect, useState, useRef } from "react";
 import { useKeycap } from "../../../contexts/keycap_context"; // keycap 상태 불러오기
 import "../../../style/piano.css";
 import keyPitchMap from "./keyPitchMap";
+import PianoKey from "./pianokey";
+import Playbar from "../playbar/playbar";
 
 const Piano = () => {
   const { selectedSound } = useKeycap(); // 선택된 사운드 가져오기
   const audioContextRef = useRef<AudioContext | null>(null); // AudioContext 참조
   const [activeKeys, setActiveKeys] = useState<string[]>([]); // 현재 눌린 키 저장
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
+    null
+  );
+  const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]); // 녹음된 청크 저장
 
   // 오디오 버퍼를 로드하는 함수
   const loadSound = async (url: string) => {
@@ -17,7 +23,6 @@ const Piano = () => {
     const audioBuffer = await audioContextRef.current.decodeAudioData(
       arrayBuffer
     );
-
     return audioBuffer;
   };
 
@@ -26,32 +31,22 @@ const Piano = () => {
     if (!selectedSound) return; // 사운드가 없으면 종료
 
     // AudioContext가 없다면 새로 생성
-    if (
-      !audioContextRef.current ||
-      audioContextRef.current.state === "closed"
-    ) {
+    if (!audioContextRef.current) {
       audioContextRef.current = new AudioContext();
     } else if (audioContextRef.current.state === "suspended") {
-      // 상태가 suspended인 경우 resume() 호출
       await audioContextRef.current.resume();
     }
 
     const audioContext = audioContextRef.current;
-
-    // 오디오 버퍼 로드
     const audioBuffer = await loadSound(selectedSound);
     if (!audioBuffer) return;
 
-    // AudioBufferSourceNode 생성
     const source = audioContext.createBufferSource();
     source.buffer = audioBuffer;
 
-    // 피치 조절: playbackRate를 사용하여 피치를 조정
-    const frequency = keyPitchMap[key]; // key에 맞는 주파수 가져오기
+    const frequency = keyPitchMap[key];
     const baseFrequency = 261.63; // C4(도)의 주파수
-    const playbackRate = frequency / baseFrequency; // 주파수를 재생 속도로 변환
-
-    // 재생 속도 설정 (피치 조정)
+    const playbackRate = frequency / baseFrequency;
     source.playbackRate.value = playbackRate;
 
     // 소스를 AudioContext의 destination에 연결
@@ -60,21 +55,49 @@ const Piano = () => {
     // 사운드 재생
     source.start();
 
-    // 눌린 키 배열에 추가
     setActiveKeys((prevKeys) => [...prevKeys, key]);
-
-    // 눌린 키 배열에서 해당 키를 200ms 후에 제거
     setTimeout(() => {
       setActiveKeys((prevKeys) => prevKeys.filter((k) => k !== key));
     }, 200);
   };
 
+  // 녹음 시작
+  const startRecording = () => {
+    if (!audioContextRef.current) {
+      audioContextRef.current = new AudioContext();
+    }
+
+    const destination = audioContextRef.current.createMediaStreamDestination();
+    const recorder = new MediaRecorder(destination.stream);
+
+    recorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        setRecordedChunks((prev) => [...prev, event.data]);
+      }
+    };
+
+    recorder.onstop = () => {
+      const blob = new Blob(recordedChunks, { type: "audio/mp3" });
+      const url = URL.createObjectURL(blob);
+      // 여기서 blob을 사용하여 파일을 저장하거나 다운로드 링크를 생성할 수 있습니다.
+    };
+
+    // 녹음을 시작합니다.
+    recorder.start();
+    setMediaRecorder(recorder);
+  };
+
+  // 녹음 중지
+  const stopRecording = () => {
+    mediaRecorder?.stop();
+    setMediaRecorder(null);
+  };
+
   // 키보드 입력 처리
   const handleKeyDown = (event: KeyboardEvent) => {
     const key = event.key;
-    console.log(key);
     if (keyPitchMap[key]) {
-      playSound(key); // key에 맞는 피치로 사운드 재생
+      playSound(key);
     }
   };
 
@@ -96,16 +119,16 @@ const Piano = () => {
         w-e-t-y-u-o-p)
       </p>
       <div className="piano-keys">
-        {/* 눌린 키에 따라 스타일 적용 */}
         {Object.keys(keyPitchMap).map((key) => (
-          <div
+          <PianoKey
             key={key}
-            className={`piano-key ${activeKeys.includes(key) ? "active" : ""}`}
-          >
-            {key.toUpperCase()}
-          </div>
+            keyName={key}
+            isActive={activeKeys.includes(key)}
+            onKeyDown={() => playSound(key)}
+          />
         ))}
       </div>
+      <Playbar startRecording={startRecording} stopRecording={stopRecording} />
     </div>
   );
 };
