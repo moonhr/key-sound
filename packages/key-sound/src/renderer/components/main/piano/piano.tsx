@@ -71,7 +71,7 @@ const Piano = () => {
 
     // MediaRecorder 지원 여부 확인
     if (!MediaRecorder) {
-      console.error("MediaRecorder API is not supported in this browser.");
+      console.error("MediaRecorder API is not supported in this environment.");
       return;
     }
 
@@ -90,6 +90,19 @@ const Piano = () => {
       console.error("Error during recording:", event);
     };
 
+    // 마이크 권한 요청 (사용자에게 권한 요청)
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const source = audioContextRef.current.createMediaStreamSource(stream);
+      source.connect(destination); // 스트림 연결
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
+      return;
+    }
+
+    recorder.start(); // 녹음 시작
+    setIsRecording(true); // 녹음 상태 변경
+
     recorder.onstop = () => {
       const blob = new Blob(recordedChunksRef.current, { type: "audio/webm" });
       const url = URL.createObjectURL(blob);
@@ -103,19 +116,6 @@ const Piano = () => {
       setMediaRecorder(null); // MediaRecorder 초기화
       setIsRecording(false); // 녹음 상태 변경
     };
-
-    // 마이크 권한 요청 (사용자에게 권한 요청)
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const source = audioContextRef.current.createMediaStreamSource(stream);
-      source.connect(destination); // 스트림 연결
-    } catch (error) {
-      console.error("Error accessing microphone:", error);
-      return;
-    }
-
-    recorder.start(); // 녹음 시작
-    setIsRecording(true); // 녹음 상태 변경
   };
 
   // 녹음 중지
