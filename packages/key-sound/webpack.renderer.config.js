@@ -28,8 +28,7 @@ module.exports = {
         },
       },
       {
-        test: /\.css$/,
-        type: "asset/resource",
+        test: /\.css$/i,
         use: ["style-loader", "css-loader", "postcss-loader"],
       },
       {
