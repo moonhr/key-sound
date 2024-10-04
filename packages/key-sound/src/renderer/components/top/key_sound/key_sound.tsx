@@ -29,13 +29,6 @@ const KeySound = () => {
   return (
     <div>
       <button onClick={() => setModalOpen(true)} className="w-4 h-4">
-        {/* 모달 창 */}
-        {isModalOpen && (
-          <Modal onClose={() => setModalOpen(false)}>
-            <KeycapStatic onSaveKeySound={handleSaveKeySound} />
-          </Modal>
-        )}
-
         {/* 선택된 키캡과 사운드가 있는지 확인 */}
         <div>
           {selectedKeycap ? (
@@ -47,6 +40,12 @@ const KeySound = () => {
           )}
         </div>
       </button>
+      {/* 모달 창 */}
+      {isModalOpen && (
+        <Modal onClose={() => setModalOpen(false)}>
+          <KeycapStatic onSaveKeySound={handleSaveKeySound} />
+        </Modal>
+      )}
     </div>
   );
 };
