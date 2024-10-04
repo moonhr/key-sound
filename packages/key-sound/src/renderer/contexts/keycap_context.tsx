@@ -1,4 +1,5 @@
 import React, { useContext, useState, createContext, ReactNode } from "react";
+import { staticData } from "../../static/staticData";
 
 interface KeycapContextType {
   selectedSound: string | null;
@@ -11,7 +12,9 @@ const KeycapContext = createContext<KeycapContextType | undefined>(undefined);
 export const KeycapProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [selectedSound, setSelectedSound] = useState<string | null>(null);
+  const [selectedSound, setSelectedSound] = useState<string | null>(
+    staticData.DuckKey.soundFile
+  );
 
   return (
     <KeycapContext.Provider
