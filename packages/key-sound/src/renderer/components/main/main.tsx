@@ -3,7 +3,7 @@ import Piano from "./piano/piano";
 
 const Main = () => {
   return (
-    <div>
+    <div className="w-full h-full main ">
       <Piano />
     </div>
   );
