@@ -39,11 +39,16 @@ const PlayButton: React.FC = () => {
 
   return (
     <div>
-      <button onClick={handlePlay}>
+      <button
+        onClick={handlePlay}
+        className={` ${
+          soundFile ? "opacity-100 hover:bg-slate-800" : "opacity-50"
+        }`}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="23"
-          height="29"
+          width="20"
+          height="25"
           viewBox="0 0 23 29"
           fill="none"
         >

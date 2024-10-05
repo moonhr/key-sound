@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useKeycap } from "../../../contexts/keycap_context"; // keycap 상태 불러오기
-import "../../../style/piano.css";
 import keyPitchMap from "./keyPitchMap";
 import PianoKey from "./pianokey";
 import Playbar from "../playbar/playbar";
+import Stopbar from "../playbar/stopbar";
 
 const Piano = () => {
   const { selectedSound } = useKeycap(); // 선택된 사운드 가져오기
@@ -125,7 +125,6 @@ const Piano = () => {
     }
   };
 
-  // 스페이스바 키 입력 처리
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.code === "Space") {
       event.preventDefault(); // 기본 스페이스바 동작 방지
@@ -154,24 +153,25 @@ const Piano = () => {
   }, [selectedSound]);
 
   return (
-    <div>
-      <p>
-        키보드를 사용하여 피아노를 연주하세요! (a-s-d-f-g-h-j-k-l 및
-        w-e-t-y-u-o-p)
-      </p>
-      <div className="piano-keys">
-        {Object.keys(keyPitchMap).map((key) => (
-          <PianoKey
-            key={key}
-            keyName={key}
-            isActive={activeKeys.includes(key)}
-            onKeyDown={() => playSound(key)}
-          />
-        ))}
+    <div className="flex flex-col items-center justify-center w-full h-full">
+      <div className="flex flex-col items-center justify-center w-full h-full mt-4 piano">
+        <div className="relative flex items-center justify-center w-[1025px] h-[430px] max-w-[100%]">
+          {Object.keys(keyPitchMap).map((key) => (
+            <PianoKey
+              key={key}
+              keyName={key}
+              isActive={activeKeys.includes(key)}
+              onKeyDown={() => playSound(key)}
+            />
+          ))}
+        </div>
+        <div
+          className="z-10 w-auto mt-10 text-2xl font-press-start"
+          onClick={isRecording ? stopRecording : startRecording}
+        >
+          {isRecording ? <Stopbar /> : <Playbar />}
+        </div>{" "}
       </div>
-      <button onClick={isRecording ? stopRecording : startRecording}>
-        {isRecording ? "Stop Recording" : "Start Recording"}
-      </button>{" "}
     </div>
   );
 };
