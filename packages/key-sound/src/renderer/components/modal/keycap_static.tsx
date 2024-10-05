@@ -70,15 +70,24 @@ const KeycapStatic: React.FC<KeycapStaticProps> = ({ onSaveKeySound }) => {
 
   return (
     <div>
-      {Object.entries(staticData).map(([key, item]) => (
-        <div key={key} onClick={() => handleClick(key)}>
-          <img
-            src={isActive === key ? item.activeSvg : item.svg}
-            alt={item.name}
-          />
-        </div>
-      ))}
-      <p>Current selected sound: {currentKey}</p>
+      <div className="relative bg-black w-[300px] h-[180px] grid grid-cols-3 gap-1 p-1 rounded-xl">
+        {Object.entries(staticData).map(([key, item]) => (
+          <div
+            key={key}
+            className="relative group"
+            onClick={() => handleClick(key)}
+          >
+            <img
+              src={isActive === key ? item.activeSvg : item.svg}
+              alt={item.name}
+              className="absolute bottom-0 w-[120%]"
+            />
+            <p className="hidden group-hover:block absolute bottom-[100%] left-1/2 transform -translate-x-1/2 mb-2 text-white bg-black bg-opacity-80 rounded-lg p-1 whitespace-nowrap">
+              {item.name}
+            </p>
+          </div>
+        ))}
+      </div>
       <button onClick={handleSave}>Save</button> {/* Save 버튼 추가 */}
     </div>
   );

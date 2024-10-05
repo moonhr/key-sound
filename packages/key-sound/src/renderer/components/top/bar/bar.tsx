@@ -5,11 +5,11 @@ const Bar: React.FC = () => {
   const { soundFile } = useSoundFile();
 
   return (
-    <div className="w-[200px] bg-slate-400">
+    <div className=" w-[450px] bg-[#E4E4E4] border border-black rounded-full flex justify-center items-center h-[40px] ">
       {soundFile ? (
-        <p>불러온 파일명: {soundFile.name}</p>
+        <p>{soundFile.name}</p>
       ) : (
-        <p>파일이 불러오지 않았습니다.</p>
+        <p className="opacity-30">파일을 불러오지 않았습니다.</p>
       )}
     </div>
   );

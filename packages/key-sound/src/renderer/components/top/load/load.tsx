@@ -14,12 +14,16 @@ const LoadFile: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="flex flex-col w-5 h-4 gap-1 mr-8">
       <input
         type="file"
         accept=".mp3" // mp3 파일만 허용
         onChange={handleFileChange}
+        className="absolute w-5 opacity-0"
       />
+      <span className="w-full h-2 bg-black rounded " />
+      <span className="w-full h-2 bg-black rounded " />
+      <span className="w-full h-2 bg-black rounded " />
     </div>
   );
 };

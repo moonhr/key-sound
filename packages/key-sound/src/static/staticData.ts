@@ -21,37 +21,37 @@ import StandardKeyActive from "./svg/Standard_active.svg";
 import DuckKeyActive from "./svg/DuckKey_active.svg";
 
 export const staticData: Record<string, SoundButton> = {
-  "Brown Key": {
+  BrownKey: {
     name: "Brown Key",
     soundFile: BrownKeySound,
     svg: BrownKey,
     activeSvg: BrownKeyActive,
   },
-  "Blue Key": {
+  BlueKey: {
     name: "Blue Key",
     soundFile: BlueKeySound,
     svg: BlueKey,
     activeSvg: BlueKeyActive,
   },
-  "Black Key": {
+  BlackKey: {
     name: "Black Key",
     soundFile: BlackKeySound,
     svg: BlackKey,
     activeSvg: BlackKeyActive,
   },
-  "Red Key": {
+  RedKey: {
     name: "Red Key",
     soundFile: RedKeySound,
     svg: RedKey,
     activeSvg: RedKeyActive,
   },
-  "Standard Key": {
+  StandardKey: {
     name: "Standard Key",
     soundFile: StandardKeySound,
     svg: StandardKey,
     activeSvg: StandardKeyActive,
   },
-  "Duck Key": {
+  DuckKey: {
     name: "Duck Key",
     soundFile: DuckKeySound,
     svg: DuckKey,

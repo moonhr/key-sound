@@ -28,7 +28,7 @@ const KeySound = () => {
 
   return (
     <div>
-      <button onClick={() => setModalOpen(true)} className="w-4 h-4">
+      <button onClick={() => setModalOpen(true)} className="w-6 h-6">
         {/* 선택된 키캡과 사운드가 있는지 확인 */}
         <div>
           {selectedKeycap ? (
