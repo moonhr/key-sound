@@ -1,5 +1,4 @@
 import React from "react";
-// import TestComponent from "../components/test_component";
 
 import Top from "../components/top/top";
 import Main from "../components/main/main";
@@ -8,14 +7,13 @@ import { KeycapProvider } from "../contexts/keycap_context";
 
 const AppContent: React.FC = () => {
   return (
-    <div>
+    <div className="w-full h-[100vh] bg-[#D9D9D9] rounded-xl flex flex-col p-4 border border-black justify-center items-center">
       <KeycapProvider>
         <SoundFileProvider>
           <Top />
         </SoundFileProvider>
         <Main />
       </KeycapProvider>
-      {/* <TestComponent /> */}
     </div>
   );
 };

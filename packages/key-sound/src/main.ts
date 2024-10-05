@@ -16,8 +16,8 @@ let mainWindow: BrowserWindow;
 //메인창 속성
 function createMainWindow() {
   mainWindow = new BrowserWindow({
-    width: 1000,
-    height: 1000,
+    width: 1100,
+    height: 700,
     frame: true,
     resizable: false,
     webPreferences: {
@@ -27,6 +27,7 @@ function createMainWindow() {
     },
   });
   mainWindow.loadFile(path.join(__dirname, "index.html"));
+  //개발자모드
   mainWindow.webContents.openDevTools();
 }
 
