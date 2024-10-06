@@ -67,7 +67,7 @@ const KeycapStatic: React.FC<KeycapStaticProps> = ({ onSaveKeySound }) => {
   }
 
   return (
-    <div>
+    <div className="flex flex-col items-center justify-center w-full h-full gap-3 mt-10">
       <div className="relative bg-black w-[300px] h-[180px] grid grid-cols-3 gap-1 p-1 rounded-xl">
         {Object.entries(staticData).map(([key, item]) => (
           <div
@@ -86,7 +86,12 @@ const KeycapStatic: React.FC<KeycapStaticProps> = ({ onSaveKeySound }) => {
           </div>
         ))}
       </div>
-      <button onClick={handleSave}>Save</button> {/* Save 버튼 추가 */}
+      <button
+        className="p-4 text-xl font-normal text-white bg-black cursor-pointer rounded-xl"
+        onClick={handleSave}
+      >
+        SAVE
+      </button>
     </div>
   );
 };

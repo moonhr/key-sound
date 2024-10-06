@@ -16,10 +16,13 @@ const Modal: React.FC<ModalProps> = ({ onClose, children }) => {
       onClick={handleOverlayClick}
     >
       <div
-        className="p-20 bg-white border border-black w-[80%] rounded-xl"
+        className="p-16 bg-white border border-black w-[60%] rounded-xl relative"
         onClick={(e) => e.stopPropagation()}
       >
-        <span className="close" onClick={onClose}>
+        <span
+          className="absolute cursor-pointer top-4 right-4"
+          onClick={onClose}
+        >
           &times;
         </span>
         {children}

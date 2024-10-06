@@ -35,9 +35,7 @@ const KeySound = () => {
             <div>
               <img src={selectedKeycap.svg} alt="Selected Keycap" />
             </div>
-          ) : (
-            <p>키 사운드를 선택하세요!</p>
-          )}
+          ) : null}
         </div>
       </button>
       {/* 모달 창 */}
