@@ -1,4 +1,4 @@
-const keyPitchMap: { [key: string]: number } = {
+const KEY_PITCH_MAP: { [key: string]: number } = {
   a: 261.63, // C4 (도)
   s: 293.66, // D4 (레)
   d: 329.63, // E4 (미)
@@ -18,4 +18,4 @@ const keyPitchMap: { [key: string]: number } = {
   p: 622.25, // D#5 (레#)
 };
 
-export default keyPitchMap;
+export default KEY_PITCH_MAP;
