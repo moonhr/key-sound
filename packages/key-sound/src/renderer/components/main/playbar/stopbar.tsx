@@ -12,7 +12,7 @@ const Stopbar = () => {
       >
         <path
           fill-rule="evenodd"
-          clip-rule="evenodd"
+          clipRule="evenodd"
           d="M1 20.8107L11.9882 2.9729H454L465 20.8107V94.108C465 96.3172 463.209 98.108 461 98.108H5C2.79086 98.108 1 96.3172 1 94.108V20.8107Z"
           fill="#77B6A5"
         />
