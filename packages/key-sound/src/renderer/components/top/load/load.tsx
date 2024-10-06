@@ -14,7 +14,7 @@ const LoadFile: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col w-5 h-4 gap-1 mr-8">
+    <div className="flex flex-col w-5 h-4 gap-1">
       <input
         type="file"
         accept=".mp3" // mp3 파일만 허용

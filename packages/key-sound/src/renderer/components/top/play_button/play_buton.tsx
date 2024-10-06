@@ -4,7 +4,6 @@ import { useSoundFile } from "../../../contexts/soune_file_context";
 const PlayButton: React.FC = () => {
   const { soundFile } = useSoundFile();
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     let fileUrl: string | null = null;
@@ -25,40 +24,37 @@ const PlayButton: React.FC = () => {
 
   const handlePlay = () => {
     if (soundFile?.type !== "audio/mpeg") {
-      // 파일 타입이 올바르지 않으면 경고 메시지를 설정
-      setErrorMessage("MP3 파일만 재생할 수 있습니다.");
+      // 파일 타입이 올바르지 않으면 경고창을 표시
+      alert("재생할 파일이 없습니다.");
       return;
     }
 
     if (audioRef.current) {
       audioRef.current.play();
       // 재생 시 에러 메시지를 초기화
-      setErrorMessage(null);
     }
   };
 
   return (
-    <div>
+    <div className="flex items-center justify-center">
       <button
         onClick={handlePlay}
         className={` ${
-          soundFile ? "opacity-100 hover:bg-slate-800" : "opacity-50"
+          soundFile ? "opacity-100 hover:scale-105" : "opacity-50"
         }`}
       >
         <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="25"
-          viewBox="0 0 23 29"
+          width="49"
+          height="49"
+          viewBox="0 0 49 49"
           fill="none"
+          xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            d="M0.333252 28.7917V0.208328L22.7916 14.5L0.333252 28.7917Z"
+            d="M16.3333 38.7917V10.2083L38.7916 24.5L16.3333 38.7917Z"
             fill="#1D1B20"
           />
         </svg>
-        {/* 에러 메시지가 있을 때만 표시 */}
-        {errorMessage && <p>{errorMessage}</p>}
 
         {/* MP3 파일일 경우에만 audio 요소를 렌더링 */}
         {soundFile?.type === "audio/mpeg" && (

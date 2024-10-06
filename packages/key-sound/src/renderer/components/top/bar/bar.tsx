@@ -5,7 +5,7 @@ const Bar: React.FC = () => {
   const { soundFile } = useSoundFile();
 
   return (
-    <div className=" w-[450px] bg-[#E4E4E4] border border-black rounded-full flex justify-center items-center h-[40px] ">
+    <div className=" w-[450px] bg-[#E4E4E4] border border-black rounded-full flex justify-center items-center h-[40px] text-xl">
       {soundFile ? (
         <p>{soundFile.name}</p>
       ) : (

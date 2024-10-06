@@ -27,16 +27,16 @@ const KeySound = () => {
   };
 
   return (
-    <div>
-      <button onClick={() => setModalOpen(true)} className="w-6 h-6">
-        {/* 선택된 키캡과 사운드가 있는지 확인 */}
-        <div>
-          {selectedKeycap ? (
-            <div>
-              <img src={selectedKeycap.svg} alt="Selected Keycap" />
-            </div>
-          ) : null}
-        </div>
+    <div className="flex items-center justify-center h-full">
+      <button
+        onClick={() => setModalOpen(true)}
+        className="flex items-center justify-center w-8 h-8"
+      >
+        {selectedKeycap ? (
+          <div className="flex items-center justify-center h-full">
+            <img src={selectedKeycap.svg} alt="Selected Keycap" />
+          </div>
+        ) : null}
       </button>
       {/* 모달 창 */}
       {isModalOpen && (
