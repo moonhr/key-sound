@@ -1,153 +1,155 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useKeycap } from "../../../contexts/keycap_context"; // keycap 상태 불러오기
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import { useKeycap } from "../../../contexts/keycap_context";
 import keyPitchMap from "./keyPitchMap";
 import PianoKey from "./pianokey";
 import Playbar from "../playbar/playbar";
 import Stopbar from "../playbar/stopbar";
 
 const Piano = () => {
-  const { selectedSound } = useKeycap(); // 선택된 사운드 가져오기
-  const audioContextRef = useRef<AudioContext | null>(null); // AudioContext 참조
-  const [activeKeys, setActiveKeys] = useState<string[]>([]); // 현재 눌린 키 저장
+  const { selectedSound } = useKeycap();
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const [activeKeys, setActiveKeys] = useState<string[]>([]);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
   );
-  const recordedChunksRef = useRef<Blob[]>([]); // 녹음된 청크 저장
-  const [isRecording, setIsRecording] = useState(false); // 녹음 상태 저장
+  const recordedChunksRef = useRef<Blob[]>([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const audioBufferRef = useRef<AudioBuffer | null>(null);
+  const currentSoundUrlRef = useRef<string | null>(null);
 
-  // 오디오 버퍼를 로드하는 함수
-  const loadSound = async (url: string) => {
-    if (!audioContextRef.current) return;
-
-    const response = await fetch(url);
-    const arrayBuffer = await response.arrayBuffer();
-    const audioBuffer = await audioContextRef.current.decodeAudioData(
-      arrayBuffer
-    );
-    return audioBuffer;
-  };
-
-  // 사운드 재생 함수
-  const playSound = async (key: string) => {
-    if (!selectedSound) return; // 사운드가 없으면 종료
-
-    // AudioContext가 없다면 새로 생성
-    if (!audioContextRef.current || audioContextRef.current.state === "closed") {
+  // AudioContext 초기화 함수
+  const initAudioContext = useCallback(() => {
+    if (
+      !audioContextRef.current ||
+      audioContextRef.current.state === "closed"
+    ) {
       audioContextRef.current = new AudioContext();
     } else if (audioContextRef.current.state === "suspended") {
-      await audioContextRef.current.resume();
+      audioContextRef.current.resume();
     }
+    return audioContextRef.current;
+  }, []);
 
-    const audioContext = audioContextRef.current;
-    const audioBuffer = await loadSound(selectedSound);
-    if (!audioBuffer) return;
-
-    const source = audioContext.createBufferSource();
-    source.buffer = audioBuffer;
-
-    const frequency = keyPitchMap[key];
-    const baseFrequency = 261.63; // C4(도)의 주파수
-    const playbackRate = frequency / baseFrequency;
-    source.playbackRate.value = playbackRate;
-
-    // 사운드 재생
-    source.connect(audioContext.destination);
-    source.start();
-
-    // 사운드가 끝난 후 AudioContext가 필요 없다면 닫을 수 있음
-    source.onended = () => {
-      if (audioContext && audioContext.state !== "closed") {
-        audioContext.close();
-        audioContextRef.current = null; // 컨텍스트 초기화
+  // 사운드 로드 함수
+  const loadSound = useCallback(
+    async (url: string) => {
+      const audioContext = initAudioContext();
+      if (currentSoundUrlRef.current !== url) {
+        const response = await fetch(url);
+        const arrayBuffer = await response.arrayBuffer();
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+        audioBufferRef.current = audioBuffer;
+        currentSoundUrlRef.current = url;
       }
-    };
+      return audioBufferRef.current;
+    },
+    [initAudioContext]
+  );
 
-    // 눌린 키 표시
-    setActiveKeys((prevKeys) => [...prevKeys, key]);
-    setTimeout(() => {
-      setActiveKeys((prevKeys) => prevKeys.filter((k) => k !== key));
-    }, 200);
-  };
+  // 사운드 재생 함수
+  const playSound = useCallback(
+    async (key: string) => {
+      if (!selectedSound) return;
 
-  // 녹음 시작
-  const startRecording = async () => {
-    if (!audioContextRef.current || audioContextRef.current.state === "closed") {
-      audioContextRef.current = new AudioContext();
-    }
+      const audioContext = initAudioContext();
+      const audioBuffer = await loadSound(selectedSound);
+      if (!audioBuffer) return;
 
-    const destination = audioContextRef.current.createMediaStreamDestination();
+      const source = audioContext.createBufferSource();
+      source.buffer = audioBuffer;
 
-    // MediaRecorder 지원 여부 확인
+      const frequency = keyPitchMap[key];
+      const baseFrequency = 261.63;
+      const playbackRate = frequency / baseFrequency;
+      source.playbackRate.value = playbackRate;
+
+      source.connect(audioContext.destination);
+      source.start();
+
+      setActiveKeys((prevKeys) => [...prevKeys, key]);
+      setTimeout(() => {
+        setActiveKeys((prevKeys) => prevKeys.filter((k) => k !== key));
+      }, 200);
+    },
+    [selectedSound, initAudioContext, loadSound]
+  );
+
+  // 키 이벤트 핸들러
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.code === "Space") {
+        event.preventDefault();
+        if (isRecording) {
+          stopRecording();
+        } else {
+          startRecording();
+        }
+      }
+
+      const key = event.key;
+      if (keyPitchMap[key]) {
+        playSound(key);
+      }
+    },
+    [isRecording, playSound]
+  );
+
+  // 녹음 시작 함수
+  const startRecording = useCallback(async () => {
+    const audioContext = initAudioContext();
+    const destination = audioContext.createMediaStreamDestination();
+
     if (!MediaRecorder) {
       console.error("MediaRecorder API is not supported in this environment.");
       return;
     }
 
     const recorder = new MediaRecorder(destination.stream);
-    setMediaRecorder(recorder); // MediaRecorder 상태 설정
+    setMediaRecorder(recorder);
 
-    // MediaRecorder 데이터가 준비되면 recordedChunksRef에 추가
     recorder.ondataavailable = (event) => {
       if (event.data.size > 0) {
         recordedChunksRef.current.push(event.data);
       }
     };
 
-    // 에러 처리
     recorder.onerror = (event) => {
       console.error("Error during recording:", event);
     };
 
-    // 마이크 권한 요청 (사용자에게 권한 요청)
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const source = audioContextRef.current.createMediaStreamSource(stream);
-      source.connect(destination); // 스트림 연결
+      const source = audioContext.createMediaStreamSource(stream);
+      source.connect(destination);
     } catch (error) {
       console.error("Error accessing microphone:", error);
       return;
     }
 
-    recorder.start(); // 녹음 시작
-    setIsRecording(true); // 녹음 상태 변경
+    recorder.start();
+    setIsRecording(true);
 
     recorder.onstop = () => {
       const blob = new Blob(recordedChunksRef.current, { type: "audio/webm" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "recording.webm"; // 다운로드 파일 이름
+      a.download = "recording.webm";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      recordedChunksRef.current = []; // 녹음된 청크 초기화
-      setMediaRecorder(null); // MediaRecorder 초기화
-      setIsRecording(false); // 녹음 상태 변경
+      recordedChunksRef.current = [];
+      setMediaRecorder(null);
+      setIsRecording(false);
     };
-  };
+  }, [initAudioContext]);
 
-  // 녹음 중지
-  const stopRecording = () => {
+  // 녹음 중지 함수
+  const stopRecording = useCallback(() => {
     if (mediaRecorder) {
-      mediaRecorder.stop(); // 녹음 중지
+      mediaRecorder.stop();
     }
-  };
-
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.code === "Space") {
-      event.preventDefault(); // 기본 스페이스바 동작 방지
-      if (isRecording) {
-        stopRecording(); // 녹음 중지
-      } else {
-        startRecording(); // 녹음 시작
-      }
-    }
-
-    const key = event.key;
-    if (keyPitchMap[key]) {
-      playSound(key);
-    }
-  };
+  }, [mediaRecorder]);
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
@@ -155,10 +157,16 @@ const Piano = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       if (audioContextRef.current) {
-        audioContextRef.current.close(); // AudioContext 종료
+        audioContextRef.current.close();
       }
     };
-  }, [selectedSound]);
+  }, [handleKeyDown]);
+
+  useEffect(() => {
+    if (selectedSound) {
+      loadSound(selectedSound);
+    }
+  }, [selectedSound, loadSound]);
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full">
