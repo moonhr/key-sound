@@ -24,6 +24,7 @@ function createMainWindow() {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false,
       contextIsolation: true,
+      webSecurity: true,
     },
   });
   mainWindow.loadFile(path.join(__dirname, "index.html"));
