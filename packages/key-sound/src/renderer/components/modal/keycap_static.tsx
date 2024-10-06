@@ -8,7 +8,6 @@ interface KeycapStaticProps {
 
 const KeycapStatic: React.FC<KeycapStaticProps> = ({ onSaveKeySound }) => {
   const [isActive, setIsActive] = useState<string | null>(null);
-  const [currentKey, setCurrentKey] = useState<string>("Standard Key");
   const [selectedKey, setSelectedKey] = useState<string | null>(null); // 별도의 상태로 선택된 key 저장
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -40,7 +39,6 @@ const KeycapStatic: React.FC<KeycapStaticProps> = ({ onSaveKeySound }) => {
 
   const handleClick = (key: string) => {
     setIsActive(key);
-    setCurrentKey(key);
     setSelectedKey(key); // Save 시 전달할 key는 따로 저장
     console.log(key);
     console.log(isActive);
