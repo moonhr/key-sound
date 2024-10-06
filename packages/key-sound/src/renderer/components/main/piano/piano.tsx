@@ -32,7 +32,7 @@ const Piano = () => {
     if (!selectedSound) return; // 사운드가 없으면 종료
 
     // AudioContext가 없다면 새로 생성
-    if (!audioContextRef.current) {
+    if (!audioContextRef.current || audioContextRef.current.state === "closed") {
       audioContextRef.current = new AudioContext();
     } else if (audioContextRef.current.state === "suspended") {
       await audioContextRef.current.resume();
@@ -54,6 +54,14 @@ const Piano = () => {
     source.connect(audioContext.destination);
     source.start();
 
+    // 사운드가 끝난 후 AudioContext가 필요 없다면 닫을 수 있음
+    source.onended = () => {
+      if (audioContext && audioContext.state !== "closed") {
+        audioContext.close();
+        audioContextRef.current = null; // 컨텍스트 초기화
+      }
+    };
+
     // 눌린 키 표시
     setActiveKeys((prevKeys) => [...prevKeys, key]);
     setTimeout(() => {
@@ -63,7 +71,7 @@ const Piano = () => {
 
   // 녹음 시작
   const startRecording = async () => {
-    if (!audioContextRef.current) {
+    if (!audioContextRef.current || audioContextRef.current.state === "closed") {
       audioContextRef.current = new AudioContext();
     }
 
@@ -170,7 +178,7 @@ const Piano = () => {
           onClick={isRecording ? stopRecording : startRecording}
         >
           {isRecording ? <Stopbar /> : <Playbar />}
-        </div>{" "}
+        </div>
       </div>
     </div>
   );
