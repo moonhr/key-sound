@@ -13,9 +13,9 @@ const Off_button = () => {
         <path
           d="M15.1718 5.8696L5.15918 15.8822M5.15918 5.8696L15.1718 15.8822"
           stroke="#1E1E1E"
-          stroke-width="2.10791"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2.10791"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </svg>
     </div>
