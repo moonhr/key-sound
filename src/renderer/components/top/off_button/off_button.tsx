@@ -1,8 +1,13 @@
 import React from "react";
 
 const Off_button = () => {
+  const handleClose = () => {
+    // ipcRenderer를 통해 main 프로세스에 'closeApp' 메시지를 보냄
+    window.electronAPI.closeApp();
+  };
+
   return (
-    <div className="">
+    <div className="" onClick={handleClose}>
       <svg
         width="21"
         height="21"

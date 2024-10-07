@@ -1,11 +1,4 @@
-import {
-  app,
-  BrowserWindow,
-  nativeImage,
-  session,
-  ipcMain,
-  systemPreferences,
-} from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import * as path from "path";
 import * as dotenv from "dotenv";
 
@@ -46,4 +39,8 @@ app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
   }
+});
+
+ipcMain.on("close-app", () => {
+  app.quit();
 });

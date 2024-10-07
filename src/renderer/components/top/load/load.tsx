@@ -16,6 +16,7 @@ const LoadFile: React.FC = () => {
   return (
     <div className="flex flex-col w-5 h-4 gap-1">
       <input
+        title="재생파일 선택"
         type="file"
         accept=".mp3" // mp3 파일만 허용
         onChange={handleFileChange}
