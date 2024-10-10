@@ -2,15 +2,29 @@ const { FusesPlugin } = require("@electron-forge/plugin-fuses");
 const { FuseV1Options, FuseVersion } = require("@electron/fuses");
 
 module.exports = {
+  publishers: [
+    {
+      name: "@electron-forge/publisher-github",
+      config: {
+        repository: {
+          owner: "moonhr",
+          name: "key-sound",
+        },
+        prerelease: false,
+        draft: false,
+      },
+    },
+  ],
   packagerConfig: {
     asar: true,
+    files: ["dist/**", "node_modules/**/*", "build/**/*"],
   },
   rebuildConfig: {},
   makers: [
     {
       name: "@electron-forge/maker-squirrel",
       config: {
-        name: "my_new_app",
+        name: "key-sound",
       },
     },
     {

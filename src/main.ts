@@ -1,8 +1,5 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import * as path from "path";
-import * as dotenv from "dotenv";
-
-dotenv.config(); // .env 파일의 변수들을 process.env에 로드합니다.
 
 let mainWindow: BrowserWindow;
 
