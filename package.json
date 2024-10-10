@@ -2,6 +2,14 @@
   "name": "key-sound",
   "version": "1.0.0",
   "main": "dist/main.js",
+  "build": {
+    "asar": true,
+    "files": [
+      "!node_modules/*",
+      "!build/*",
+      "dist/**"
+    ]
+  },
   "scripts": {
     "build": "webpack --config webpack.config.js",
     "react:dev": "webpack serve --config webpack.renderer.config.js",
@@ -31,6 +39,7 @@
     "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
     "@electron-forge/plugin-fuses": "^7.4.0",
     "@electron-forge/plugin-webpack": "^7.4.0",
+    "@electron-forge/publisher-github": "^7.5.0",
     "@electron/fuses": "^1.8.0",
     "@svgr/webpack": "^8.1.0",
     "@types/react": "^18.3.7",

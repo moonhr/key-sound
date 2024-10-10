@@ -1,13 +1,15 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
-  mode: "development",
+  mode: "production",
   entry: {
     main: "./src/public/renderer.tsx",
   },
   target: "electron-renderer",
+  optimization: {
+    usedExports: true, // 사용되지 않는 모듈 제거
+  },
   module: {
     rules: [
       {
@@ -59,9 +61,6 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "./src/public/index.html",
       inject: "body",
-    }),
-    new CopyPlugin({
-      patterns: [{ from: "src/assets", to: "assets" }],
     }),
   ],
 };

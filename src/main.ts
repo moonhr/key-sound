@@ -22,7 +22,7 @@ function createMainWindow() {
   });
   mainWindow.loadFile(path.join(__dirname, "index.html"));
   //개발자모드
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {
